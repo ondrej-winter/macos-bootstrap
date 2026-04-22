@@ -145,7 +145,7 @@ brew "rg"
 brew "rsync"
 
 # Utility for extracting RAR archive files.
-brew "unrar"
+brew "unar"
 
 # Recursive directory listing tool showing file structure as a tree.
 brew "tree"
