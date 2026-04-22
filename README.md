@@ -6,7 +6,7 @@
 
 This project automates the setup of a fresh **Apple Silicon macOS** machine in three phases:
 
-1. **`bootstrap.sh`** validates the host, installs prerequisites, and orchestrates the run
+1. **`entrypoint.sh`** validates the host, installs prerequisites, bootstraps a temporary local `uv`, and orchestrates the run
 2. **`brewfile_install.sh`** installs packages from the split Brewfiles in `configuration_homebrew/`
 3. **`bootstrap.py`** applies filesystem, dotfile, and macOS configuration from YAML files
 
@@ -24,11 +24,14 @@ Together, they provision a new Mac with:
 
 ### Entry Points & Phases
 
-**`bootstrap.sh` (public orchestrator)**
+**`entrypoint.sh` (public orchestrator)**
 - ✅ Check system prerequisites
 - ✅ Install/update Homebrew
 - ✅ Run the Brewfile phase
-- ✅ Verify Python/uv and launch the Python bootstrap entrypoint
+- ✅ Bootstrap a temporary repository-local `uv`, install Python through it, and launch the Python bootstrap entrypoint
+
+**`bootstrap.sh` (compatibility shim)**
+- ✅ Forwards legacy invocations to `entrypoint.sh`
 
 **`brewfile_install.sh` (internal Brewfile phase)**
 - ✅ Install or reinstall packages from split Brewfiles in `configuration_homebrew/`
@@ -44,7 +47,8 @@ Together, they provision a new Mac with:
 
 ```
 bootstrap_macos/
-├── bootstrap.sh           # Main public entry point / orchestrator
+├── entrypoint.sh          # Main public entry point / orchestrator
+├── bootstrap.sh           # Compatibility wrapper forwarding to entrypoint.sh
 ├── brewfile_install.sh    # Internal Homebrew Brewfile phase
 ├── bootstrap.py           # Python configuration script
 ├── configuration/         # Split YAML configuration by concern
@@ -94,8 +98,8 @@ bootstrap_macos/
 
 2. **Run the bootstrap script:**
    ```bash
-   chmod +x bootstrap.sh
-   ./bootstrap.sh
+   chmod +x entrypoint.sh
+   ./entrypoint.sh
    ```
 
 The wrapper will:
@@ -103,40 +107,41 @@ The wrapper will:
 - check macOS + Apple Silicon requirements
 - install Xcode Command Line Tools if needed
 - install or update Homebrew
-- run the Brewfile phase
-- ensure `python3` and `uv` are available
-- launch `bootstrap.py` through `uv run`
+- run the Brewfile phase, which can install the permanent Homebrew-managed `uv`
+- bootstrap a temporary repository-local `uv` under `.bootstrap-tools/`
+- install Python 3.13 through that local `uv`
+- launch `bootstrap.py` through the temporary local `uv run`
 
 3. **Restart your terminal** after completion to apply shell changes
 
 ### Command-Line Options
 
-The `bootstrap.sh` entrypoint forwards several options to the Python script:
+The `entrypoint.sh` entrypoint forwards several options to the Python script:
 
 ```bash
 # Show wrapper help
-./bootstrap.sh --help
+./entrypoint.sh --help
 
 # Skip specific steps
-./bootstrap.sh --skip-brewfile
-./bootstrap.sh --skip-dotfiles
-./bootstrap.sh --skip-macos-settings
-./bootstrap.sh --skip-directories
+./entrypoint.sh --skip-brewfile
+./entrypoint.sh --skip-dotfiles
+./entrypoint.sh --skip-macos-settings
+./entrypoint.sh --skip-directories
 
 # Dry run (show what would be done)
-./bootstrap.sh --dry-run
+./entrypoint.sh --dry-run
 
 # Verbose output
-./bootstrap.sh --verbose
+./entrypoint.sh --verbose
 
 # Save log to file
-./bootstrap.sh --log-file bootstrap.log
+./entrypoint.sh --log-file bootstrap.log
 
 # Use custom config
-./bootstrap.sh --config my-config.yaml
+./entrypoint.sh --config my-config.yaml
 
 # Or point to a split configuration directory
-./bootstrap.sh --config configuration
+./entrypoint.sh --config configuration
 ```
 
 Wrapper-specific options:
@@ -144,6 +149,8 @@ Wrapper-specific options:
 - `--help` / `-h` — show usage without running prerequisite checks or installs
 - `--skip-brewfile` — skip the Brewfile phase before launching `bootstrap.py`
 - `--reinstall-existing` — reinstall already-installed Brewfile formulae and casks during the Brewfile phase
+
+`bootstrap.sh` is still available as a deprecated compatibility wrapper and simply forwards to `entrypoint.sh`.
 
 All other options shown above are forwarded to `bootstrap.py`, which currently supports:
 
@@ -205,7 +212,7 @@ stable_finder_visibility:
 You can also still use a monolithic YAML file by passing a custom path:
 
 ```bash
-./bootstrap.sh --config my-config.yaml
+./entrypoint.sh --config my-config.yaml
 ```
 
 ### 2. Customize Dotfiles
@@ -319,6 +326,8 @@ The Python portion of the project is managed with `uv` and defined in `pyproject
 4. **📦 Automatic**: No manual dependency installation needed
 5. **🔄 Drop-in**: Compatible with existing Python tooling
 
+For bootstrapping, the project now downloads a temporary repository-local `uv` into `.bootstrap-tools/` instead of requiring `uv` to exist globally up front. The Brewfile phase can still install the permanent Homebrew-managed `uv` later as part of the machine setup.
+
 ### Python Module Overview
 
 - **`utils.py`**: Logging, path expansion, backups, command execution
@@ -346,7 +355,7 @@ update
 The bootstrap is idempotent - safe to run multiple times:
 ```bash
 cd ~/bootstrap_macos
-./bootstrap.sh
+./entrypoint.sh
 ```
 
 For Homebrew formulae and casks in the Brewfile, re-running the bootstrap will install missing items and skip already-installed ones by default.
@@ -354,7 +363,7 @@ For Homebrew formulae and casks in the Brewfile, re-running the bootstrap will i
 If you want to force reinstallation of already-managed formulae and casks to repair drift, run:
 
 ```bash
-./bootstrap.sh --reinstall-existing
+./entrypoint.sh --reinstall-existing
 ```
 
 ### Brewfile Logs
@@ -408,7 +417,7 @@ update      # Update Homebrew packages
 ### Command Line Tools Not Installing
 If the dialog appears, complete it and re-run:
 ```bash
-./bootstrap.sh
+./entrypoint.sh
 ```
 
 ### Python Dependencies Not Installing
@@ -433,7 +442,7 @@ source ~/.zshrc
 ### Verbose Logging
 Enable debug output:
 ```bash
-./bootstrap.sh --verbose --log-file debug.log
+./entrypoint.sh --verbose --log-file debug.log
 ```
 
 ## 📦 Manual Steps
@@ -458,16 +467,16 @@ Some things still require manual setup:
 ### Dry Run Mode
 Test without making changes:
 ```bash
-./bootstrap.sh --dry-run
+./entrypoint.sh --dry-run
 ```
 
 ### Skip Specific Steps
 ```bash
 # Skip the Homebrew/Brewfile phase
-./bootstrap.sh --skip-brewfile
+./entrypoint.sh --skip-brewfile
 
 # Only run the Python configuration phases
-./bootstrap.sh --skip-dotfiles --skip-macos-settings --skip-directories
+./entrypoint.sh --skip-dotfiles --skip-macos-settings --skip-directories
 ```
 
 ### Verify Python Setup
@@ -480,7 +489,7 @@ This verifies the Python entrypoint and configuration workflow.
 ### Validate Shell Wrapper Help
 
 ```bash
-./bootstrap.sh --help
+./entrypoint.sh --help
 ```
 
 ### Validate the Brewfile Phase Independently
