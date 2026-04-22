@@ -11,6 +11,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BREW_PHASE_SCRIPT="${SCRIPT_DIR}/brewfile_install.sh"
 PYTHON_SETUP_SCRIPT="${SCRIPT_DIR}/bootstrap.py"
 SKIP_BREWFILE=false
+REINSTALL_EXISTING=false
 SHOW_HELP=false
 PYTHON_ARGS=()
 
@@ -56,6 +57,7 @@ Homebrew Brewfile phase, and then launches the Python bootstrap script.
 
 Wrapper options:
   --skip-brewfile         Skip the Brewfile installation phase
+  --reinstall-existing    Reinstall already-installed Brewfile formulae and casks
   -h, --help              Show this help message and exit
 
 Python bootstrap options are forwarded to bootstrap.py, for example:
@@ -136,7 +138,11 @@ run_brewfile_phase() {
         return 1
     fi
 
-    bash "$BREW_PHASE_SCRIPT"
+    if [ "$REINSTALL_EXISTING" = true ]; then
+        bash "$BREW_PHASE_SCRIPT" --reinstall-existing
+    else
+        bash "$BREW_PHASE_SCRIPT"
+    fi
 }
 
 check_python() {
@@ -179,6 +185,9 @@ parse_arguments() {
                 ;;
             --skip-brewfile)
                 SKIP_BREWFILE=true
+                ;;
+            --reinstall-existing)
+                REINSTALL_EXISTING=true
                 ;;
             *)
                 PYTHON_ARGS+=("$arg")

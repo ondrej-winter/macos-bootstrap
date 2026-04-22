@@ -21,6 +21,7 @@ BREWFILE_PATHS=(
 LOG_DIR="${SCRIPT_DIR}/logs"
 BREWFILE_LOG_FILE=""
 APP_DIR="${HOME}/Applications"
+REINSTALL_EXISTING=false
 
 BREW_INSTALLED_ITEMS=()
 BREW_REINSTALLED_ITEMS=()
@@ -213,10 +214,14 @@ install_formula_from_brewfile() {
     local item_label="brew ${formula_name}"
 
     if is_formula_installed "$formula_name"; then
-        if run_logged_command "reinstall ${item_label}" brew reinstall "$formula_name"; then
-            record_brew_outcome "OK" "${item_label} (reinstalled)" "reinstalled"
+        if [ "$REINSTALL_EXISTING" = true ]; then
+            if run_logged_command "reinstall ${item_label}" brew reinstall "$formula_name"; then
+                record_brew_outcome "OK" "${item_label} (reinstalled)" "reinstalled"
+            else
+                record_brew_outcome "FAIL" "${item_label} (reinstall failed)" "failed"
+            fi
         else
-            record_brew_outcome "FAIL" "${item_label} (reinstall failed)" "failed"
+            record_brew_outcome "SKIP" "${item_label} (already installed)" "skipped"
         fi
         return 0
     fi
@@ -237,10 +242,14 @@ install_cask_from_brewfile() {
     mkdir -p "$APP_DIR"
 
     if is_cask_installed "$cask_name"; then
-        if run_logged_command "reinstall ${item_label}" brew reinstall --cask --appdir "$APP_DIR" "$cask_name"; then
-            record_brew_outcome "OK" "${item_label} (reinstalled)" "reinstalled"
+        if [ "$REINSTALL_EXISTING" = true ]; then
+            if run_logged_command "reinstall ${item_label}" brew reinstall --cask --appdir "$APP_DIR" "$cask_name"; then
+                record_brew_outcome "OK" "${item_label} (reinstalled)" "reinstalled"
+            else
+                record_brew_outcome "FAIL" "${item_label} (reinstall failed)" "failed"
+            fi
         else
-            record_brew_outcome "FAIL" "${item_label} (reinstall failed)" "failed"
+            record_brew_outcome "SKIP" "${item_label} (already installed)" "skipped"
         fi
         return 0
     fi
@@ -304,6 +313,40 @@ print_banner() {
     echo "║                                                            ║"
     echo "╚════════════════════════════════════════════════════════════╝"
     echo ""
+}
+
+print_help() {
+    cat <<EOF_HELP
+Usage: ./brewfile_install.sh [options]
+
+Options:
+  --reinstall-existing    Reinstall already-installed formulae and casks
+  -h, --help              Show this help message and exit
+
+Default behavior installs only missing Brewfile items and skips formulae/casks
+that are already installed.
+EOF_HELP
+}
+
+parse_arguments() {
+    local arg=""
+
+    for arg in "$@"; do
+        case "$arg" in
+            --reinstall-existing)
+                REINSTALL_EXISTING=true
+                ;;
+            -h|--help)
+                print_help
+                exit 0
+                ;;
+            *)
+                log_error "Unknown option: $arg"
+                print_help
+                exit 1
+                ;;
+        esac
+    done
 }
 
 check_homebrew() {
@@ -450,7 +493,17 @@ main() {
     print_banner
     local brewfile_status=0
 
+    parse_arguments "$@"
+
     log_info "Starting Brewfile installation phase..."
+    echo ""
+
+    if [ "$REINSTALL_EXISTING" = true ]; then
+        log_info "Repair mode enabled: already-installed formulae and casks will be reinstalled"
+    else
+        log_info "Default mode enabled: already-installed formulae and casks will be skipped"
+    fi
+
     echo ""
 
     check_homebrew || return $?

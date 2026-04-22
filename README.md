@@ -143,6 +143,7 @@ Wrapper-specific options:
 
 - `--help` / `-h` — show usage without running prerequisite checks or installs
 - `--skip-brewfile` — skip the Brewfile phase before launching `bootstrap.py`
+- `--reinstall-existing` — reinstall already-installed Brewfile formulae and casks during the Brewfile phase
 
 All other options shown above are forwarded to `bootstrap.py`, which currently supports:
 
@@ -340,7 +341,13 @@ cd ~/bootstrap_macos
 ./bootstrap.sh
 ```
 
-For Homebrew formulae and casks in the Brewfile, re-running the bootstrap will install missing items and reinstall already-managed items to repair drift.
+For Homebrew formulae and casks in the Brewfile, re-running the bootstrap will install missing items and skip already-installed ones by default.
+
+If you want to force reinstallation of already-managed formulae and casks to repair drift, run:
+
+```bash
+./bootstrap.sh --reinstall-existing
+```
 
 ### Brewfile Logs
 
@@ -472,6 +479,12 @@ This verifies the Python entrypoint and configuration workflow.
 
 ```bash
 ./brewfile_install.sh
+```
+
+Force reinstall of already-installed formulae and casks:
+
+```bash
+./brewfile_install.sh --reinstall-existing
 ```
 
 > Note: there is currently no `tests/` directory in this repository, so automated test commands should be added together with a test suite.
