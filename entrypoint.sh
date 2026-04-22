@@ -5,16 +5,16 @@
 # Prepares a repository-local uv installation and ensures local Python is available.
 ################################################################################
 
-set -e
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/lib/logging.sh"
-LOCAL_TOOLS_DIR="${SCRIPT_DIR}/.bootstrap-tools"
-LOCAL_BIN_DIR="${LOCAL_TOOLS_DIR}/bin"
-LOCAL_UV_BIN="${LOCAL_BIN_DIR}/uv"
-LOCAL_PYTHON_DIR="${LOCAL_TOOLS_DIR}/python"
-SHOW_HELP=false
-UV_DOWNLOAD_URL="https://astral.sh/uv/install.sh"
+
+readonly LOCAL_TOOLS_DIR="${SCRIPT_DIR}/.bootstrap-tools"
+readonly LOCAL_BIN_DIR="${LOCAL_TOOLS_DIR}/bin"
+readonly LOCAL_UV_BIN="${LOCAL_BIN_DIR}/uv"
+readonly LOCAL_PYTHON_DIR="${LOCAL_TOOLS_DIR}/python"
+readonly UV_DOWNLOAD_URL="https://astral.sh/uv/install.sh"
 
 print_banner() {
     echo ""
@@ -41,12 +41,20 @@ Examples:
 EOF_HELP
 }
 
-install_local_uv() {
+print_phase() {
+    echo ""
+    log_info "═══════════════════════════════════════════════════════════"
+    log_info "$1"
+    log_info "═══════════════════════════════════════════════════════════"
+    echo ""
+}
+
+ensure_local_uv() {
     log_info "Checking for repository-local uv bootstrap..."
 
     if [ -x "$LOCAL_UV_BIN" ]; then
         log_success "Repository-local uv already available at $LOCAL_UV_BIN"
-        return 0
+        return
     fi
 
     log_info "Installing repository-local uv into $LOCAL_TOOLS_DIR"
@@ -65,7 +73,7 @@ install_local_uv() {
     log_success "Repository-local uv installed successfully"
 }
 
-install_python_with_local_uv() {
+ensure_local_python() {
     log_info "Installing required Python via repository-local uv..."
     mkdir -p "$LOCAL_PYTHON_DIR"
     UV_PYTHON_INSTALL_DIR="$LOCAL_PYTHON_DIR" "$LOCAL_UV_BIN" python install --no-bin 3.13
@@ -73,12 +81,13 @@ install_python_with_local_uv() {
 }
 
 parse_arguments() {
-    local arg=""
+    local arg
 
     for arg in "$@"; do
         case "$arg" in
             -h|--help)
-                SHOW_HELP=true
+                print_help
+                exit 0
                 ;;
             *)
                 log_error "Unsupported argument: $arg"
@@ -91,25 +100,16 @@ parse_arguments() {
 }
 
 main() {
-    print_banner
-
     parse_arguments "$@"
 
-    if [ "$SHOW_HELP" = true ]; then
-        print_help
-        return 0
-    fi
+    print_banner
 
     log_info "Starting local Python initialization entrypoint..."
-    echo ""
 
-    log_info "═══════════════════════════════════════════════════════════"
-    log_info "Phase 1: Repository-local uv"
-    log_info "═══════════════════════════════════════════════════════════"
-    echo ""
+    print_phase "Phase 1: Repository-local uv"
 
-    install_local_uv
-    install_python_with_local_uv
+    ensure_local_uv
+    ensure_local_python
 
     echo ""
     log_success "════════════════════════════════════════════════════════════"
@@ -119,4 +119,3 @@ main() {
 }
 
 main "$@"
-exit $?
