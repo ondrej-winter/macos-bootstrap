@@ -1,7 +1,6 @@
 """macOS system preferences configuration module."""
 
 import logging
-import shlex
 from typing import Any, Dict, List
 
 from .utils import (
@@ -75,12 +74,10 @@ class MacOSSettingsManager:
         """
         try:
             converted_value = self._convert_value(value, value_type)
-            
-            # Build defaults write command
-            command = (
-                f'defaults write {shlex.quote(domain)} {shlex.quote(key)} '
-                f'-{value_type} {shlex.quote(converted_value)}'
-            )
+
+            command = [
+                'defaults', 'write', domain, key, f'-{value_type}', converted_value
+            ]
             
             self.logger.debug(f"Applying: {description}")
             if self.dry_run:
@@ -161,8 +158,11 @@ class MacOSSettingsManager:
         try:
             if not self.dry_run:
                 run_command(
-                    'osascript -e \'tell application "System Settings" to quit\' '
-                    '-e \'tell application "System Preferences" to quit\'',
+                    [
+                        'osascript',
+                        '-e', 'tell application "System Settings" to quit',
+                        '-e', 'tell application "System Preferences" to quit',
+                    ],
                     self.logger,
                     check=False,
                     capture_output=True
@@ -220,10 +220,36 @@ class MacOSSettingsManager:
         
         for cmd_config in commands:
             command = cmd_config.get('command')
-            description = cmd_config.get('description', command)
+            shell_command = cmd_config.get('shell_command')
+            description = cmd_config.get('description', shell_command or command)
             requires_sudo = cmd_config.get('requires_sudo', False)
-            
-            if not command:
+
+            if command and shell_command:
+                log_error(
+                    self.logger,
+                    f"Invalid command configuration (choose either 'command' or 'shell_command'): {cmd_config}"
+                )
+                fail_count += 1
+                continue
+
+            if command:
+                if not isinstance(command, list) or not all(isinstance(arg, str) for arg in command):
+                    log_error(
+                        self.logger,
+                        f"Invalid command configuration ('command' must be a list of strings): {cmd_config}"
+                    )
+                    fail_count += 1
+                    continue
+                command = [str(expand_path(arg)) if '~' in arg else arg for arg in command]
+            elif shell_command:
+                if not isinstance(shell_command, str):
+                    log_error(
+                        self.logger,
+                        f"Invalid command configuration ('shell_command' must be a string): {cmd_config}"
+                    )
+                    fail_count += 1
+                    continue
+            else:
                 log_error(self.logger, f"Invalid command configuration: {cmd_config}")
                 fail_count += 1
                 continue
@@ -238,7 +264,13 @@ class MacOSSettingsManager:
                     log_info(self.logger, f"[dry-run] Would run command: {description}")
                     success_count += 1
                 else:
-                    result = run_command(command, self.logger, check=False, capture_output=True)
+                    result = run_command(
+                        command if command else shell_command,
+                        self.logger,
+                        check=False,
+                        shell=bool(shell_command),
+                        capture_output=True
+                    )
                     if result.returncode == 0:
                         success_count += 1
                     else:

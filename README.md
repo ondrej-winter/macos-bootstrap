@@ -169,6 +169,12 @@ The default configuration is now split into smaller files in `configuration/`:
 
 This keeps each concern isolated and easier to maintain. The bootstrap loader also remains backward compatible with the old single-file `config.yaml` format if you pass it explicitly with `--config`.
 
+`special_commands.yaml` supports two formats:
+- `command: ["arg1", "arg2", ...]` for safer non-shell execution
+- `shell_command: "..."` for explicit shell-based commands when shell features are required
+
+For list-based `command` entries, `~` paths are expanded by the bootstrap before execution.
+
 Example split configuration:
 
 ```yaml
@@ -321,6 +327,8 @@ The Python portion of the project is managed with `uv` and defined in `pyproject
 - **`macos_settings.py`**: Apply macOS defaults with validation
 
 These modules are wired into the active `bootstrap.py` execution path and can also be exercised in dry-run mode.
+
+For safety, configuration-driven commands should prefer structured argument lists over raw shell strings. Shell execution should be treated as an explicit escape hatch rather than the default.
 
 ## 🔄 Updating & Maintenance
 

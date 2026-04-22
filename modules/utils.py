@@ -7,7 +7,7 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Sequence
 
 
 # ANSI color codes for terminal output
@@ -115,20 +115,20 @@ def backup_file(file_path: Path, backup_dir: Optional[Path] = None) -> Optional[
 
 
 def run_command(
-    command: str,
+    command: str | Sequence[str],
     logger: logging.Logger,
     check: bool = True,
-    shell: bool = True,
+    shell: bool = False,
     capture_output: bool = False
 ) -> subprocess.CompletedProcess:
     """
-    Run a shell command with proper error handling.
+    Run a command with proper error handling.
     
     Args:
-        command: Command to run
+        command: Command string or argument list to run
         logger: Logger instance
         check: Raise exception on non-zero exit code
-        shell: Run command in shell
+        shell: Run command in shell (must be explicitly enabled)
         capture_output: Capture stdout/stderr
         
     Returns:
@@ -137,8 +137,9 @@ def run_command(
     Raises:
         subprocess.CalledProcessError: If command fails and check=True
     """
+    command_display = command if isinstance(command, str) else ' '.join(command)
     try:
-        logger.debug(f"Running command: {command}")
+        logger.debug(f"Running command: {command_display}")
         result = subprocess.run(
             command,
             shell=shell,
@@ -147,12 +148,14 @@ def run_command(
             text=True
         )
         if not check and result.returncode != 0:
-            logger.debug(f"Command returned non-zero exit code {result.returncode}: {command}")
+            logger.debug(
+                f"Command returned non-zero exit code {result.returncode}: {command_display}"
+            )
             if capture_output and result.stderr:
                 logger.debug(result.stderr.strip())
         return result
     except subprocess.CalledProcessError as e:
-        log_error(logger, f"Command failed: {command}")
+        log_error(logger, f"Command failed: {command_display}")
         log_error(logger, f"Exit code: {e.returncode}")
         if capture_output and e.stderr:
             log_error(logger, f"Error output: {e.stderr}")
@@ -184,7 +187,7 @@ def restart_application(app_name: str, logger: logging.Logger) -> bool:
     try:
         # Kill the application
         run_command(
-            f'killall "{app_name}"',
+            ['killall', app_name],
             logger,
             check=False,
             capture_output=True

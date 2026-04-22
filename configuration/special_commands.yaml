@@ -1,30 +1,31 @@
 # Imperative macOS tweaks that do not map cleanly to structured defaults.
 #
 # Notes:
-# - Commands in this file are executed through a shell.
+# - Prefer structured argument lists under `command:`. These execute without a shell.
+# - Use `shell_command:` only for commands that truly require shell features.
 # - Use this file for host-specific defaults, filesystem flags, or other
 #   special-case commands that are awkward to express in macos_defaults.
 # - Some commands, such as nvram writes, may be hardware- or security-sensitive.
 
 # Boot behavior
-- command: "sudo nvram SystemAudioVolume=' '"
+- command: ["sudo", "nvram", "SystemAudioVolume= "]
   description: "Disable boot sound"
   requires_sudo: true
 
 # Trackpad behavior (current host only)
-- command: "defaults -currentHost write -g com.apple.trackpad.threeFingerDragGesture -bool true"
+- command: ["defaults", "-currentHost", "write", "-g", "com.apple.trackpad.threeFingerDragGesture", "-bool", "true"]
   description: "Enable current-host three-finger drag gesture"
   requires_sudo: false
 
-- command: "defaults -currentHost write -g com.apple.trackpad.threeFingerHorizSwipeGesture -int 0"
+- command: ["defaults", "-currentHost", "write", "-g", "com.apple.trackpad.threeFingerHorizSwipeGesture", "-int", "0"]
   description: "Disable current-host three-finger horizontal swipe gesture"
   requires_sudo: false
 
-- command: "defaults -currentHost write -g com.apple.trackpad.threeFingerVertSwipeGesture -int 0"
+- command: ["defaults", "-currentHost", "write", "-g", "com.apple.trackpad.threeFingerVertSwipeGesture", "-int", "0"]
   description: "Disable current-host three-finger vertical swipe gesture"
   requires_sudo: false
 
 # Finder/filesystem visibility
-- command: "chflags nohidden ~/Library"
+- command: ["chflags", "nohidden", "~/Library"]
   description: "Show Library folder"
   requires_sudo: false
