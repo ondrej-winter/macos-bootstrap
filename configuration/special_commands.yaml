@@ -1,8 +1,17 @@
-# Special commands that need sudo or special handling
+# Imperative macOS tweaks that do not map cleanly to structured defaults.
+#
+# Notes:
+# - Commands in this file are executed through a shell.
+# - Use this file for host-specific defaults, filesystem flags, or other
+#   special-case commands that are awkward to express in macos_defaults.
+# - Some commands, such as nvram writes, may be hardware- or security-sensitive.
+
+# Boot behavior
 - command: "sudo nvram SystemAudioVolume=' '"
   description: "Disable boot sound"
   requires_sudo: true
 
+# Trackpad behavior (current host only)
 - command: "defaults -currentHost write -g com.apple.trackpad.threeFingerDragGesture -bool true"
   description: "Enable current-host three-finger drag gesture"
   requires_sudo: false
@@ -15,10 +24,7 @@
   description: "Disable current-host three-finger vertical swipe gesture"
   requires_sudo: false
 
+# Finder/filesystem visibility
 - command: "chflags nohidden ~/Library"
   description: "Show Library folder"
   requires_sudo: false
-
-- command: "sudo chflags nohidden /Volumes"
-  description: "Show Volumes folder"
-  requires_sudo: true
