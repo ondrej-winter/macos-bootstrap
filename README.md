@@ -50,7 +50,9 @@ bootstrap_macos/
 ├── configuration/         # Split YAML configuration by concern
 │   ├── directories.yaml
 │   ├── dotfiles.yaml
-│   ├── macos_defaults.yaml
+│   ├── macos_defaults/
+│   │   ├── stable_*.yaml
+│   │   └── community_*.yaml
 │   ├── special_commands.yaml
 │   └── restart_applications.yaml
 ├── pyproject.toml         # Python project & dependencies (UV)
@@ -160,7 +162,7 @@ The default configuration is now split into smaller files in `configuration/`:
 
 - `configuration/directories.yaml`
 - `configuration/dotfiles.yaml`
-- `configuration/macos_defaults.yaml`
+- `configuration/macos_defaults/`
 - `configuration/special_commands.yaml`
 - `configuration/restart_applications.yaml`
 
@@ -182,14 +184,16 @@ Example split configuration:
 ```
 
 ```yaml
-# configuration/macos_defaults.yaml
-finder:
+# configuration/macos_defaults/stable_finder_visibility.yaml
+stable_finder_visibility:
   - domain: "com.apple.finder"
     key: "AppleShowAllFiles"
     type: "bool"
     value: true
     description: "Show hidden files"
 ```
+
+`macos_defaults` can now be split into multiple YAML files under `configuration/macos_defaults/`. The loader merges them into one combined `macos_defaults` mapping at runtime. For backward compatibility, a single `configuration/macos_defaults.yaml` file is still also supported when using a custom config directory.
 
 You can also still use a monolithic YAML file by passing a custom path:
 
@@ -486,7 +490,7 @@ Customize this bootstrap for your needs:
 
 - Add applications to the files in `configuration_homebrew/`
 - Create new Python modules in `modules/`
-- Add system preferences to `configuration/macos_defaults.yaml`
+- Add system preferences to files in `configuration/macos_defaults/`
 - Share your configurations with the team
 
 ## 📄 License

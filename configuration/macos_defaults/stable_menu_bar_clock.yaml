@@ -1,0 +1,31 @@
+stable_menu_bar_clock:
+  - domain: com.apple.menuextra.clock
+    key: IsAnalog
+    type: bool
+    value: false
+    description: Use digital menu bar clock
+  - domain: com.apple.menuextra.clock
+    key: ShowAMPM
+    type: bool
+    value: true
+    description: Show AM/PM in menu bar clock
+  - domain: com.apple.menuextra.clock
+    key: ShowDate
+    type: bool
+    value: false
+    description: Hide date in menu bar clock
+  - domain: com.apple.menuextra.clock
+    key: ShowDayOfWeek
+    type: bool
+    value: true
+    description: Show day of week in menu bar clock
+  - domain: com.apple.menuextra.clock
+    key: TimeAnnouncementsEnabled
+    type: bool
+    value: false
+    description: Disable spoken time announcements
+  - domain: com.apple.menuextra.clock
+    key: TimeAnnouncementsIntervalIdentifier
+    type: string
+    value: EveryHourInterval
+    description: Set time announcement interval

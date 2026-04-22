@@ -1,0 +1,51 @@
+stable_finder_behavior:
+  - domain: com.apple.finder
+    key: _FXSortFoldersFirst
+    type: bool
+    value: true
+    description: Keep folders on top when sorting
+  - domain: com.apple.finder
+    key: FXDefaultSearchScope
+    type: string
+    value: SCcf
+    description: Search current folder by default
+  - domain: com.apple.finder
+    key: FXEnableExtensionChangeWarning
+    type: bool
+    value: false
+    description: Disable warning when changing file extension
+  - domain: NSGlobalDomain
+    key: com.apple.springing.enabled
+    type: bool
+    value: true
+    description: Enable spring loading for directories
+  - domain: NSGlobalDomain
+    key: com.apple.springing.delay
+    type: float
+    value: 0
+    description: Remove spring loading delay
+  - domain: com.apple.desktopservices
+    key: DSDontWriteNetworkStores
+    type: bool
+    value: true
+    description: Avoid creating .DS_Store on network volumes
+  - domain: com.apple.desktopservices
+    key: DSDontWriteUSBStores
+    type: bool
+    value: true
+    description: Avoid creating .DS_Store on USB volumes
+  - domain: com.apple.finder
+    key: FXPreferredViewStyle
+    type: string
+    value: Nlsv
+    description: Use list view by default
+  - domain: com.apple.finder
+    key: FXPreferredGroupBy
+    type: string
+    value: Name
+    description: Group Finder items by name
+  - domain: com.apple.finder
+    key: WarnOnEmptyTrash
+    type: bool
+    value: true
+    description: Warn before emptying Trash

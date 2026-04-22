@@ -1,0 +1,76 @@
+stable_dock_mission_control:
+  - domain: com.apple.dock
+    key: orientation
+    type: string
+    value: left
+    description: Place Dock on the left
+  - domain: com.apple.dock
+    key: tilesize
+    type: int
+    value: 36
+    description: Set Dock icon size
+  - domain: com.apple.dock
+    key: magnification
+    type: bool
+    value: false
+    description: Disable Dock magnification
+  - domain: com.apple.dock
+    key: largesize
+    type: int
+    value: 64
+    description: Set magnified Dock icon size
+  - domain: com.apple.dock
+    key: minimize-to-application
+    type: bool
+    value: true
+    description: Minimize windows into application icon
+  - domain: com.apple.dock
+    key: mineffect
+    type: string
+    value: scale
+    description: Use scale minimize effect
+  - domain: com.apple.dock
+    key: launchanim
+    type: bool
+    value: false
+    description: Disable app launch animations
+  - domain: com.apple.dock
+    key: show-process-indicators
+    type: bool
+    value: true
+    description: Show indicators for open applications
+  - domain: com.apple.dock
+    key: expose-animation-duration
+    type: float
+    value: 0.1
+    description: Speed up Mission Control animations
+  - domain: com.apple.dock
+    key: mru-spaces
+    type: bool
+    value: false
+    description: Don't rearrange Spaces by most recent use
+  - domain: com.apple.dock
+    key: autohide-delay
+    type: float
+    value: 0
+    description: Remove auto-hiding Dock delay
+  - domain: com.apple.dock
+    key: autohide-time-modifier
+    type: float
+    value: 0
+    description: Remove animation when hiding/showing Dock
+  - domain: com.apple.dock
+    key: autohide
+    type: bool
+    value: false
+    description: Keep Dock visible
+  - domain: com.apple.dock
+    key: showhidden
+    type: bool
+    value: true
+    description: Make hidden app icons translucent
+  - domain: com.apple.dock
+    key: show-recents
+    type: bool
+    value: false
+    description: Don't show recent applications in Dock

@@ -1,0 +1,21 @@
+community_finder_icloud:
+  - domain: com.apple.finder
+    key: FXICloudDriveDesktop
+    type: bool
+    value: true
+    description: Enable iCloud Drive Desktop sync
+  - domain: com.apple.finder
+    key: FXICloudDriveDocuments
+    type: bool
+    value: true
+    description: Enable iCloud Drive Documents sync
+  - domain: com.apple.finder
+    key: FXICloudDriveEnabled
+    type: bool
+    value: true
+    description: Enable iCloud Drive integration
+  - domain: com.apple.finder
+    key: FXICloudLoggedIn
+    type: bool
+    value: true
+    description: Mark iCloud as signed in for Finder

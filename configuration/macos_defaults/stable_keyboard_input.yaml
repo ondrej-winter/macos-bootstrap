@@ -1,0 +1,51 @@
+stable_keyboard_input:
+  - domain: NSGlobalDomain
+    key: AppleKeyboardUIMode
+    type: int
+    value: 2
+    description: Enable full keyboard access for all controls
+  - domain: NSGlobalDomain
+    key: ApplePressAndHoldEnabled
+    type: bool
+    value: false
+    description: Disable press-and-hold in favor of key repeat
+  - domain: NSGlobalDomain
+    key: KeyRepeat
+    type: int
+    value: 2
+    description: Set fast keyboard repeat rate
+  - domain: NSGlobalDomain
+    key: InitialKeyRepeat
+    type: int
+    value: 15
+    description: Set fast initial key repeat
+  - domain: NSGlobalDomain
+    key: NSAutomaticCapitalizationEnabled
+    type: bool
+    value: false
+    description: Disable automatic capitalization
+  - domain: NSGlobalDomain
+    key: NSAutomaticDashSubstitutionEnabled
+    type: bool
+    value: false
+    description: Disable smart dashes
+  - domain: NSGlobalDomain
+    key: NSAutomaticPeriodSubstitutionEnabled
+    type: bool
+    value: false
+    description: Disable automatic period substitution
+  - domain: NSGlobalDomain
+    key: NSAutomaticQuoteSubstitutionEnabled
+    type: bool
+    value: false
+    description: Disable smart quotes
+  - domain: NSGlobalDomain
+    key: NSAutomaticSpellingCorrectionEnabled
+    type: bool
+    value: false
+    description: Disable auto-correct
+  - domain: NSGlobalDomain
+    key: WebAutomaticSpellingCorrectionEnabled
+    type: bool
+    value: false
+    description: Disable web auto-correct

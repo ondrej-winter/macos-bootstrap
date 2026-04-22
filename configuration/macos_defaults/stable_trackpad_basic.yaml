@@ -1,0 +1,71 @@
+stable_trackpad_basic:
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: Clicking
+    type: bool
+    value: false
+    description: Disable tap to click
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: TrackpadRightClick
+    type: bool
+    value: true
+    description: Enable secondary click
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: Dragging
+    type: bool
+    value: false
+    description: Disable drag lock style dragging
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: DragLock
+    type: bool
+    value: false
+    description: Disable drag lock
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: TrackpadScroll
+    type: bool
+    value: true
+    description: Enable trackpad scrolling
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: TrackpadHorizScroll
+    type: bool
+    value: true
+    description: Enable horizontal scrolling
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: TrackpadMomentumScroll
+    type: bool
+    value: true
+    description: Enable momentum scrolling
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: TrackpadPinch
+    type: bool
+    value: true
+    description: Enable pinch gesture
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: TrackpadRotate
+    type: bool
+    value: true
+    description: Enable rotate gesture
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: USBMouseStopsTrackpad
+    type: bool
+    value: false
+    description: Keep trackpad enabled when mouse is connected
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: TrackpadHandResting
+    type: bool
+    value: true
+    description: Enable palm rejection
+  - domain: NSGlobalDomain
+    key: com.apple.mouse.tapBehavior
+    type: int
+    value: 1
+    description: Set trackpad tap behavior for this user
+  - domain: NSGlobalDomain
+    key: com.apple.trackpad.forceClick
+    type: bool
+    value: true
+    description: Enable force click
+  - domain: NSGlobalDomain
+    key: com.apple.swipescrolldirection
+    type: bool
+    value: true
+    description: Keep natural two-finger scrolling enabled

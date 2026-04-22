@@ -1,0 +1,11 @@
+stable_screen_security:
+  - domain: com.apple.screensaver
+    key: askForPassword
+    type: int
+    value: 1
+    description: Require password after sleep
+  - domain: com.apple.screensaver
+    key: askForPasswordDelay
+    type: int
+    value: 0
+    description: Require password immediately

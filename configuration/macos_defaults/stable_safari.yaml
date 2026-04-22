@@ -1,0 +1,31 @@
+stable_safari:
+  - domain: com.apple.Safari
+    key: UniversalSearchEnabled
+    type: bool
+    value: false
+    description: Don't send search queries to Apple
+  - domain: com.apple.Safari
+    key: SuppressSearchSuggestions
+    type: bool
+    value: true
+    description: Don't send search queries to Apple
+  - domain: com.apple.Safari
+    key: ShowFullURLInSmartSearchField
+    type: bool
+    value: true
+    description: Show full URL in address bar
+  - domain: com.apple.Safari
+    key: IncludeDevelopMenu
+    type: bool
+    value: true
+    description: Enable Develop menu
+  - domain: com.apple.Safari
+    key: WebKitDeveloperExtrasEnabledPreferenceKey
+    type: bool
+    value: true
+    description: Enable Web Inspector
+  - domain: com.apple.Safari
+    key: SendDoNotTrackHTTPHeader
+    type: bool
+    value: true
+    description: Enable Do Not Track

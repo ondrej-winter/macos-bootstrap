@@ -1,0 +1,111 @@
+community_trackpad_advanced:
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: ForceSuppressed
+    type: bool
+    value: false
+    description: Do not suppress force click
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: TrackpadThreeFingerDrag
+    type: bool
+    value: true
+    description: Enable three-finger drag
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: TrackpadFiveFingerPinchGesture
+    type: int
+    value: 2
+    description: Set five-finger pinch gesture
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: TrackpadFourFingerHorizSwipeGesture
+    type: int
+    value: 2
+    description: Set four-finger horizontal swipe gesture
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: TrackpadFourFingerPinchGesture
+    type: int
+    value: 2
+    description: Set four-finger pinch gesture
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: TrackpadFourFingerVertSwipeGesture
+    type: int
+    value: 2
+    description: Set four-finger vertical swipe gesture
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: TrackpadThreeFingerHorizSwipeGesture
+    type: int
+    value: 0
+    description: Disable three-finger horizontal swipe gesture
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: TrackpadThreeFingerTapGesture
+    type: int
+    value: 0
+    description: Disable three-finger tap gesture
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: TrackpadThreeFingerVertSwipeGesture
+    type: int
+    value: 0
+    description: Disable three-finger vertical swipe gesture
+  - domain: com.apple.driver.AppleBluetoothMultitouch.trackpad
+    key: TrackpadThreeFingerDrag
+    type: bool
+    value: true
+    description: Enable three-finger drag on Bluetooth trackpad
+  - domain: com.apple.driver.AppleBluetoothMultitouch.trackpad
+    key: TrackpadThreeFingerHorizSwipeGesture
+    type: int
+    value: 0
+    description: Disable three-finger horizontal swipe on Bluetooth trackpad
+  - domain: com.apple.driver.AppleBluetoothMultitouch.trackpad
+    key: TrackpadThreeFingerVertSwipeGesture
+    type: int
+    value: 0
+    description: Disable three-finger vertical swipe on Bluetooth trackpad
+  - domain: com.apple.driver.AppleBluetoothMultitouch.trackpad
+    key: TrackpadFourFingerHorizSwipeGesture
+    type: int
+    value: 2
+    description: Set four-finger horizontal swipe on Bluetooth trackpad
+  - domain: com.apple.driver.AppleBluetoothMultitouch.trackpad
+    key: TrackpadFourFingerVertSwipeGesture
+    type: int
+    value: 2
+    description: Set four-finger vertical swipe on Bluetooth trackpad
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: TrackpadTwoFingerDoubleTapGesture
+    type: int
+    value: 1
+    description: Set two-finger double tap gesture
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: TrackpadTwoFingerFromRightEdgeSwipeGesture
+    type: int
+    value: 3
+    description: Set two-finger right-edge swipe gesture
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: TrackpadCornerSecondaryClick
+    type: int
+    value: 0
+    description: Set secondary click corner behavior
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: FirstClickThreshold
+    type: int
+    value: 1
+    description: Set first click threshold
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: SecondClickThreshold
+    type: int
+    value: 1
+    description: Set second click threshold
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: ActuateDetents
+    type: bool
+    value: true
+    description: Enable haptic feedback detents
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: UserPreferences
+    type: bool
+    value: true
+    description: Use custom trackpad preferences
+  - domain: com.apple.AppleMultitouchTrackpad
+    key: version
+    type: int
+    value: 12
+    description: Trackpad preferences version

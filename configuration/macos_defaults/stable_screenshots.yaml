@@ -1,0 +1,21 @@
+stable_screenshots:
+  - domain: com.apple.screencapture
+    key: location
+    type: string
+    value: ~/Screenshots
+    description: Save screenshots to ~/Screenshots
+  - domain: com.apple.screencapture
+    key: style
+    type: string
+    value: selection
+    description: Use selection style for screenshots
+  - domain: com.apple.screencapture
+    key: type
+    type: string
+    value: png
+    description: Save screenshots in PNG format
+  - domain: com.apple.screencapture
+    key: disable-shadow
+    type: bool
+    value: true
+    description: Disable shadow in screenshots

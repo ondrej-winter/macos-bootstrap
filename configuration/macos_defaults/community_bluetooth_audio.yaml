@@ -1,0 +1,6 @@
+community_bluetooth_audio:
+  - domain: com.apple.BluetoothAudioAgent
+    key: Apple Bitpool Min (editable)
+    type: int
+    value: 40
+    description: Increase Bluetooth audio quality

@@ -1,0 +1,11 @@
+community_system_tweaks:
+  - domain: com.apple.LaunchServices
+    key: LSQuarantine
+    type: bool
+    value: false
+    description: Disable 'Are you sure you want to open this application?' dialog
+  - domain: NSGlobalDomain
+    key: AppleFontSmoothing
+    type: int
+    value: 1
+    description: Enable subpixel font rendering on non-Apple LCDs

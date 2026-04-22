@@ -1,0 +1,56 @@
+stable_system_ui:
+  - domain: NSGlobalDomain
+    key: NSNavPanelExpandedStateForSaveMode
+    type: bool
+    value: true
+    description: Expand save panel by default
+  - domain: NSGlobalDomain
+    key: NSNavPanelExpandedStateForSaveMode2
+    type: bool
+    value: true
+    description: Expand save panel by default
+  - domain: NSGlobalDomain
+    key: PMPrintingExpandedStateForPrint
+    type: bool
+    value: true
+    description: Expand print panel by default
+  - domain: NSGlobalDomain
+    key: PMPrintingExpandedStateForPrint2
+    type: bool
+    value: true
+    description: Expand print panel by default
+  - domain: NSGlobalDomain
+    key: NSDocumentSaveNewDocumentsToCloud
+    type: bool
+    value: true
+    description: Save new documents to iCloud by default
+  - domain: com.apple.print.PrintingPrefs
+    key: Quit When Finished
+    type: bool
+    value: true
+    description: Automatically quit printer app once print jobs complete
+  - domain: NSGlobalDomain
+    key: NSDisableAutomaticTermination
+    type: bool
+    value: true
+    description: Disable automatic termination of inactive apps
+  - domain: NSGlobalDomain
+    key: AppleMiniaturizeOnDoubleClick
+    type: bool
+    value: false
+    description: Don't minimize windows on double-click
+  - domain: NSGlobalDomain
+    key: com.apple.sound.beep.flash
+    type: bool
+    value: false
+    description: Disable screen flash when system beeps
+  - domain: NSGlobalDomain
+    key: com.apple.sound.beep.volume
+    type: float
+    value: 0
+    description: Mute system beep volume
+  - domain: NSGlobalDomain
+    key: com.apple.sound.uiaudio.enabled
+    type: bool
+    value: false
+    description: Disable UI sound effects

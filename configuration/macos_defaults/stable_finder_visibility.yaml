@@ -1,0 +1,51 @@
+stable_finder_visibility:
+  - domain: com.apple.finder
+    key: AppleShowAllFiles
+    type: bool
+    value: true
+    description: Show hidden files
+  - domain: NSGlobalDomain
+    key: AppleShowAllExtensions
+    type: bool
+    value: true
+    description: Show all filename extensions
+  - domain: com.apple.finder
+    key: ShowStatusBar
+    type: bool
+    value: true
+    description: Show status bar
+  - domain: com.apple.finder
+    key: ShowSidebar
+    type: bool
+    value: true
+    description: Show sidebar
+  - domain: com.apple.finder
+    key: ShowPathbar
+    type: bool
+    value: true
+    description: Show path bar
+  - domain: com.apple.finder
+    key: _FXShowPosixPathInTitle
+    type: bool
+    value: true
+    description: Display full POSIX path as window title
+  - domain: com.apple.finder
+    key: ShowExternalHardDrivesOnDesktop
+    type: bool
+    value: true
+    description: Show external hard drives on desktop
+  - domain: com.apple.finder
+    key: ShowHardDrivesOnDesktop
+    type: bool
+    value: false
+    description: Hide internal hard drives on desktop
+  - domain: com.apple.finder
+    key: ShowMountedServersOnDesktop
+    type: bool
+    value: true
+    description: Show mounted servers on desktop
+  - domain: com.apple.finder
+    key: ShowRemovableMediaOnDesktop
+    type: bool
+    value: true
+    description: Show removable media on desktop

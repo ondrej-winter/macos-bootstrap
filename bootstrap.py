@@ -76,7 +76,6 @@ def load_split_config(config_dir: Path) -> dict[str, Any]:
     section_files = {
         'directories': ('directories.yaml', list),
         'dotfiles': ('dotfiles.yaml', list),
-        'macos_defaults': ('macos_defaults.yaml', dict),
         'special_commands': ('special_commands.yaml', list),
         'restart_applications': ('restart_applications.yaml', list),
     }
@@ -89,7 +88,60 @@ def load_split_config(config_dir: Path) -> dict[str, Any]:
             value = expected_type()
         config[section] = value
 
+    config['macos_defaults'] = load_split_macos_defaults(config_dir)
+
     return config
+
+
+def load_split_macos_defaults(config_dir: Path) -> dict[str, Any]:
+    """Load macOS defaults from a single YAML file or a directory of YAML files."""
+    defaults_dir = config_dir / 'macos_defaults'
+    defaults_file = config_dir / 'macos_defaults.yaml'
+
+    if defaults_dir.exists() and defaults_file.exists():
+        raise ValueError(
+            "Split config cannot contain both 'macos_defaults/' and 'macos_defaults.yaml'"
+        )
+
+    if defaults_dir.exists():
+        if not defaults_dir.is_dir():
+            raise ValueError("Configuration path 'macos_defaults' must be a directory")
+        return _load_macos_defaults_directory(defaults_dir)
+
+    value = _load_optional_yaml_file(defaults_file, dict)
+    if value is None:
+        return {}
+    return value
+
+
+def _load_macos_defaults_directory(defaults_dir: Path) -> dict[str, Any]:
+    """Load and merge macOS defaults categories from multiple YAML files."""
+    merged: dict[str, Any] = {}
+
+    for path in sorted(defaults_dir.glob('*.yaml')):
+        with open(path, 'r', encoding='utf-8') as f:
+            value = yaml.safe_load(f)
+
+        if value is None:
+            continue
+        if not isinstance(value, dict):
+            raise ValueError(
+                f"Configuration file '{path.relative_to(defaults_dir.parent)}' must contain "
+                "a top-level mapping/object"
+            )
+
+        for category, settings in value.items():
+            if category in merged:
+                raise ValueError(
+                    f"Duplicate macOS defaults category '{category}' found in '{path.name}'"
+                )
+            if not isinstance(settings, list):
+                raise ValueError(
+                    f"macOS defaults category '{category}' in '{path.name}' must be a list"
+                )
+            merged[category] = settings
+
+    return merged
 
 
 def _load_optional_yaml_file(path: Path, expected_type: type) -> Any:

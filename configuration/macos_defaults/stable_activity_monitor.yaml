@@ -1,0 +1,26 @@
+stable_activity_monitor:
+  - domain: com.apple.ActivityMonitor
+    key: OpenMainWindow
+    type: bool
+    value: true
+    description: Show main window when launching
+  - domain: com.apple.ActivityMonitor
+    key: IconType
+    type: int
+    value: 5
+    description: Visualize CPU usage in Dock icon
+  - domain: com.apple.ActivityMonitor
+    key: ShowCategory
+    type: int
+    value: 0
+    description: Show all processes
+  - domain: com.apple.ActivityMonitor
+    key: SortColumn
+    type: string
+    value: CPUUsage
+    description: Sort by CPU usage
+  - domain: com.apple.ActivityMonitor
+    key: SortDirection
+    type: int
+    value: 0
+    description: Sort direction
