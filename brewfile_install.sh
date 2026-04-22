@@ -10,6 +10,7 @@ set -e  # Exit on error
 
 # Repository paths and Brewfile logging
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/lib/logging.sh"
 BREWFILE_DIR="${SCRIPT_DIR}/configuration_homebrew"
 BREWFILE_PATHS=(
     "${BREWFILE_DIR}/Brewfile.core"
@@ -29,51 +30,27 @@ BREW_SKIPPED_ITEMS=()
 BREW_FAILED_ITEMS=()
 BREW_UNPARSED_ITEMS=()
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m'
-
-# Logging functions
-log_info() {
-    echo -e "${BLUE}[INFO]${NC} $1"
-}
-
-log_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
-
-log_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
-}
-
-log_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
-
 log_brew_item_status() {
     local status="$1"
     local message="$2"
-    local color="$NC"
+    local color="$LOG_COLOR_RESET"
 
     case "$status" in
         OK)
-            color="$GREEN"
+            color="$LOG_COLOR_GREEN"
             ;;
         SKIP)
-            color="$BLUE"
+            color="$LOG_COLOR_BLUE"
             ;;
         FAIL)
-            color="$RED"
+            color="$LOG_COLOR_RED"
             ;;
         WARN)
-            color="$YELLOW"
+            color="$LOG_COLOR_YELLOW"
             ;;
     esac
 
-    printf "%b[%-4s]%b %s\n" "$color" "$status" "$NC" "$message"
+    printf "%b[%-4s]%b %s\n" "$color" "$status" "$LOG_COLOR_RESET" "$message"
 }
 
 append_brew_log_status() {

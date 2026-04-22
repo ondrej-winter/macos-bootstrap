@@ -10,13 +10,35 @@ from pathlib import Path
 from typing import Optional, Sequence
 
 
-# ANSI color codes for terminal output
-class Colors:
-    RED = '\033[0;31m'
-    GREEN = '\033[0;32m'
-    YELLOW = '\033[1;33m'
-    BLUE = '\033[0;34m'
-    NC = '\033[0m'  # No Color
+class LogStyles:
+    """Shared terminal styling and level labels for console logging."""
+
+    RESET = '\033[0m'
+    LEVEL_PREFIX = {
+        logging.INFO: ('\033[0;34m', '[INFO]'),
+        logging.WARNING: ('\033[1;33m', '[WARNING]'),
+        logging.ERROR: ('\033[0;31m', '[ERROR]'),
+    }
+    SUCCESS_PREFIX = ('\033[0;32m', '[SUCCESS]')
+
+
+class ConsoleLogFormatter(logging.Formatter):
+    """Formatter that prepends consistent colored level labels for console output."""
+
+    def format(self, record: logging.LogRecord) -> str:
+        message = record.getMessage()
+
+        if getattr(record, 'success', False):
+            color, prefix = LogStyles.SUCCESS_PREFIX
+        else:
+            color, prefix = LogStyles.LEVEL_PREFIX.get(
+                record.levelno,
+                ('', f'[{record.levelname}]'),
+            )
+
+        if color:
+            return f"{color}{prefix}{LogStyles.RESET} {message}"
+        return f"{prefix} {message}"
 
 
 def setup_logging(log_file: Optional[str] = None, verbose: bool = False) -> logging.Logger:
@@ -36,10 +58,10 @@ def setup_logging(log_file: Optional[str] = None, verbose: bool = False) -> logg
     if logger.handlers:
         logger.handlers.clear()
     
-    # Console handler with color
+    # Console handler with consistent colored prefixes
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(logging.DEBUG if verbose else logging.INFO)
-    console_formatter = logging.Formatter('%(message)s')
+    console_formatter = ConsoleLogFormatter()
     console_handler.setFormatter(console_formatter)
     logger.addHandler(console_handler)
     
@@ -57,23 +79,23 @@ def setup_logging(log_file: Optional[str] = None, verbose: bool = False) -> logg
 
 
 def log_info(logger: logging.Logger, message: str) -> None:
-    """Log info message with color."""
-    logger.info(f"{Colors.BLUE}[INFO]{Colors.NC} {message}")
+    """Log info message."""
+    logger.info(message)
 
 
 def log_success(logger: logging.Logger, message: str) -> None:
-    """Log success message with color."""
-    logger.info(f"{Colors.GREEN}[SUCCESS]{Colors.NC} {message}")
+    """Log success message."""
+    logger.info(message, extra={'success': True})
 
 
 def log_warning(logger: logging.Logger, message: str) -> None:
-    """Log warning message with color."""
-    logger.warning(f"{Colors.YELLOW}[WARNING]{Colors.NC} {message}")
+    """Log warning message."""
+    logger.warning(message)
 
 
 def log_error(logger: logging.Logger, message: str) -> None:
-    """Log error message with color."""
-    logger.error(f"{Colors.RED}[ERROR]{Colors.NC} {message}")
+    """Log error message."""
+    logger.error(message)
 
 
 def expand_path(path: str) -> Path:
