@@ -1,0 +1,10 @@
+# Dotfiles to install (source -> destination)
+- source: "dotfiles/.gitconfig"
+  destination: "~/.gitconfig"
+  description: "Git configuration"
+- source: "dotfiles/.zshrc"
+  destination: "~/.zshrc"
+  description: "Zsh shell configuration"
+- source: "dotfiles/.gitignore_global"
+  destination: "~/.gitignore_global"
+  description: "Global gitignore patterns"

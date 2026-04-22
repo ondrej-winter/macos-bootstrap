@@ -1,0 +1,52 @@
+# Languages, build tools, and everyday development utilities
+# Keep this file focused on tools you use directly during development.
+# Low-level dependencies should usually stay implicit unless you intentionally
+# want to pin them at the top level.
+
+# Cross-platform build system generator for C, C++, and more.
+brew "cmake"
+
+# Programming language and toolchain for building compiled applications.
+brew "go"
+
+# Build automation system primarily used for JVM projects.
+brew "gradle"
+
+# Shell completion scripts for Gradle commands.
+brew "gradle-completion"
+
+# Kubernetes package manager for deploying and managing charts.
+brew "helm"
+
+# User-friendly HTTP client for testing and interacting with APIs.
+brew "httpie"
+
+# Kubernetes command-line tool for cluster management.
+brew "kubectl"
+
+# Terminal UI for observing and managing Kubernetes clusters.
+brew "k9s"
+
+# JavaScript runtime for server-side development and tooling.
+brew "node"
+
+# Open-source Java Development Kit for JVM-based applications.
+brew "openjdk"
+
+# Fast package manager for JavaScript and Node.js projects.
+brew "pnpm"
+
+# Ruby programming language and package ecosystem tooling.
+brew "ruby"
+
+# Systems programming language and Cargo build toolchain.
+brew "rust"
+
+# Automatic formatter for Swift source code.
+brew "swiftformat"
+
+# Linter for enforcing style and quality rules in Swift code.
+brew "swiftlint"
+
+# Tool for generating Xcode projects from project specifications.
+brew "xcodegen"

@@ -1,0 +1,49 @@
+# Desktop applications (casks)
+
+# Window switcher that provides a better Alt-Tab experience on macOS.
+cask "alt-tab"
+
+# Tiling window manager for keyboard-driven window layouts.
+cask "amethyst"
+
+# Utility for completely uninstalling apps and their leftover files.
+cask "appcleaner"
+
+# Display enhancement tool for brightness, scaling, and monitor controls.
+cask "betterdisplay"
+
+# Chat and voice application for communities and team communication.
+cask "discord"
+
+# Desktop app for running Docker containers and local container tooling.
+cask "docker-desktop"
+
+# Web browser focused on privacy, customization, and open web standards.
+cask "firefox"
+
+# Monospaced Hack font for coding and terminal use.
+cask "font-hack"
+
+# Web browser for general browsing and Chrome-based development testing.
+cask "google-chrome"
+
+# Automation tool for scripting macOS behavior with Lua.
+cask "hammerspoon"
+
+# Launcher and productivity tool for apps, commands, and workflows.
+cask "raycast"
+
+# Team messaging and collaboration application.
+cask "slack"
+
+# System monitor showing CPU, memory, network, and other hardware stats.
+cask "stats"
+
+# Remote interface for managing Transmission BitTorrent clients.
+cask "transmission-remote-gui"
+
+# Code editor and IDE for development across many languages.
+cask "visual-studio-code"
+
+# Media player for video, audio, and streaming formats.
+cask "vlc"

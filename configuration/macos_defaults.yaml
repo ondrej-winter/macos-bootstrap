@@ -1,0 +1,648 @@
+# macOS preferences applied via the defaults command.
+#
+# This file is organized into two buckets:
+# - stable_*: commonly used defaults keys that are generally backed by long-lived macOS preferences
+# - community_*: tweaks commonly shared by the macOS community, but more likely to be undocumented,
+#   version-sensitive, or implementation-detail driven
+
+stable_system_ui:
+- domain: NSGlobalDomain
+  key: NSNavPanelExpandedStateForSaveMode
+  type: bool
+  value: true
+  description: Expand save panel by default
+- domain: NSGlobalDomain
+  key: NSNavPanelExpandedStateForSaveMode2
+  type: bool
+  value: true
+  description: Expand save panel by default
+- domain: NSGlobalDomain
+  key: PMPrintingExpandedStateForPrint
+  type: bool
+  value: true
+  description: Expand print panel by default
+- domain: NSGlobalDomain
+  key: PMPrintingExpandedStateForPrint2
+  type: bool
+  value: true
+  description: Expand print panel by default
+- domain: NSGlobalDomain
+  key: NSDocumentSaveNewDocumentsToCloud
+  type: bool
+  value: true
+  description: Save new documents to iCloud by default
+- domain: com.apple.print.PrintingPrefs
+  key: Quit When Finished
+  type: bool
+  value: true
+  description: Automatically quit printer app once print jobs complete
+- domain: NSGlobalDomain
+  key: NSDisableAutomaticTermination
+  type: bool
+  value: true
+  description: Disable automatic termination of inactive apps
+- domain: NSGlobalDomain
+  key: AppleMiniaturizeOnDoubleClick
+  type: bool
+  value: false
+  description: Don't minimize windows on double-click
+- domain: NSGlobalDomain
+  key: com.apple.sound.beep.flash
+  type: bool
+  value: false
+  description: Disable screen flash when system beeps
+- domain: NSGlobalDomain
+  key: com.apple.sound.beep.volume
+  type: float
+  value: 0
+  description: Mute system beep volume
+- domain: NSGlobalDomain
+  key: com.apple.sound.uiaudio.enabled
+  type: bool
+  value: false
+  description: Disable UI sound effects
+stable_keyboard_input:
+- domain: NSGlobalDomain
+  key: AppleKeyboardUIMode
+  type: int
+  value: 2
+  description: Enable full keyboard access for all controls
+- domain: NSGlobalDomain
+  key: ApplePressAndHoldEnabled
+  type: bool
+  value: false
+  description: Disable press-and-hold in favor of key repeat
+- domain: NSGlobalDomain
+  key: KeyRepeat
+  type: int
+  value: 2
+  description: Set fast keyboard repeat rate
+- domain: NSGlobalDomain
+  key: InitialKeyRepeat
+  type: int
+  value: 15
+  description: Set fast initial key repeat
+- domain: NSGlobalDomain
+  key: NSAutomaticCapitalizationEnabled
+  type: bool
+  value: false
+  description: Disable automatic capitalization
+- domain: NSGlobalDomain
+  key: NSAutomaticDashSubstitutionEnabled
+  type: bool
+  value: false
+  description: Disable smart dashes
+- domain: NSGlobalDomain
+  key: NSAutomaticPeriodSubstitutionEnabled
+  type: bool
+  value: false
+  description: Disable automatic period substitution
+- domain: NSGlobalDomain
+  key: NSAutomaticQuoteSubstitutionEnabled
+  type: bool
+  value: false
+  description: Disable smart quotes
+- domain: NSGlobalDomain
+  key: NSAutomaticSpellingCorrectionEnabled
+  type: bool
+  value: false
+  description: Disable auto-correct
+- domain: NSGlobalDomain
+  key: WebAutomaticSpellingCorrectionEnabled
+  type: bool
+  value: false
+  description: Disable web auto-correct
+stable_trackpad_basic:
+- domain: com.apple.AppleMultitouchTrackpad
+  key: Clicking
+  type: bool
+  value: false
+  description: Disable tap to click
+- domain: com.apple.AppleMultitouchTrackpad
+  key: TrackpadRightClick
+  type: bool
+  value: true
+  description: Enable secondary click
+- domain: com.apple.AppleMultitouchTrackpad
+  key: Dragging
+  type: bool
+  value: false
+  description: Disable drag lock style dragging
+- domain: com.apple.AppleMultitouchTrackpad
+  key: DragLock
+  type: bool
+  value: false
+  description: Disable drag lock
+- domain: com.apple.AppleMultitouchTrackpad
+  key: TrackpadScroll
+  type: bool
+  value: true
+  description: Enable trackpad scrolling
+- domain: com.apple.AppleMultitouchTrackpad
+  key: TrackpadHorizScroll
+  type: bool
+  value: true
+  description: Enable horizontal scrolling
+- domain: com.apple.AppleMultitouchTrackpad
+  key: TrackpadMomentumScroll
+  type: bool
+  value: true
+  description: Enable momentum scrolling
+- domain: com.apple.AppleMultitouchTrackpad
+  key: TrackpadPinch
+  type: bool
+  value: true
+  description: Enable pinch gesture
+- domain: com.apple.AppleMultitouchTrackpad
+  key: TrackpadRotate
+  type: bool
+  value: true
+  description: Enable rotate gesture
+- domain: com.apple.AppleMultitouchTrackpad
+  key: USBMouseStopsTrackpad
+  type: bool
+  value: false
+  description: Keep trackpad enabled when mouse is connected
+- domain: com.apple.AppleMultitouchTrackpad
+  key: TrackpadHandResting
+  type: bool
+  value: true
+  description: Enable palm rejection
+- domain: NSGlobalDomain
+  key: com.apple.mouse.tapBehavior
+  type: int
+  value: 1
+  description: Set trackpad tap behavior for this user
+- domain: NSGlobalDomain
+  key: com.apple.trackpad.forceClick
+  type: bool
+  value: true
+  description: Enable force click
+- domain: NSGlobalDomain
+  key: com.apple.swipescrolldirection
+  type: bool
+  value: true
+  description: Keep natural two-finger scrolling enabled
+stable_screen_security:
+- domain: com.apple.screensaver
+  key: askForPassword
+  type: int
+  value: 1
+  description: Require password after sleep
+- domain: com.apple.screensaver
+  key: askForPasswordDelay
+  type: int
+  value: 0
+  description: Require password immediately
+stable_screenshots:
+- domain: com.apple.screencapture
+  key: location
+  type: string
+  value: ~/Screenshots
+  description: Save screenshots to ~/Screenshots
+- domain: com.apple.screencapture
+  key: style
+  type: string
+  value: selection
+  description: Use selection style for screenshots
+- domain: com.apple.screencapture
+  key: type
+  type: string
+  value: png
+  description: Save screenshots in PNG format
+- domain: com.apple.screencapture
+  key: disable-shadow
+  type: bool
+  value: true
+  description: Disable shadow in screenshots
+stable_finder_visibility:
+- domain: com.apple.finder
+  key: AppleShowAllFiles
+  type: bool
+  value: true
+  description: Show hidden files
+- domain: NSGlobalDomain
+  key: AppleShowAllExtensions
+  type: bool
+  value: true
+  description: Show all filename extensions
+- domain: com.apple.finder
+  key: ShowStatusBar
+  type: bool
+  value: true
+  description: Show status bar
+- domain: com.apple.finder
+  key: ShowSidebar
+  type: bool
+  value: true
+  description: Show sidebar
+- domain: com.apple.finder
+  key: ShowPathbar
+  type: bool
+  value: true
+  description: Show path bar
+- domain: com.apple.finder
+  key: _FXShowPosixPathInTitle
+  type: bool
+  value: true
+  description: Display full POSIX path as window title
+- domain: com.apple.finder
+  key: ShowExternalHardDrivesOnDesktop
+  type: bool
+  value: true
+  description: Show external hard drives on desktop
+- domain: com.apple.finder
+  key: ShowHardDrivesOnDesktop
+  type: bool
+  value: false
+  description: Hide internal hard drives on desktop
+- domain: com.apple.finder
+  key: ShowMountedServersOnDesktop
+  type: bool
+  value: true
+  description: Show mounted servers on desktop
+- domain: com.apple.finder
+  key: ShowRemovableMediaOnDesktop
+  type: bool
+  value: true
+  description: Show removable media on desktop
+stable_finder_behavior:
+- domain: com.apple.finder
+  key: _FXSortFoldersFirst
+  type: bool
+  value: true
+  description: Keep folders on top when sorting
+- domain: com.apple.finder
+  key: FXDefaultSearchScope
+  type: string
+  value: SCcf
+  description: Search current folder by default
+- domain: com.apple.finder
+  key: FXEnableExtensionChangeWarning
+  type: bool
+  value: false
+  description: Disable warning when changing file extension
+- domain: NSGlobalDomain
+  key: com.apple.springing.enabled
+  type: bool
+  value: true
+  description: Enable spring loading for directories
+- domain: NSGlobalDomain
+  key: com.apple.springing.delay
+  type: float
+  value: 0
+  description: Remove spring loading delay
+- domain: com.apple.desktopservices
+  key: DSDontWriteNetworkStores
+  type: bool
+  value: true
+  description: Avoid creating .DS_Store on network volumes
+- domain: com.apple.desktopservices
+  key: DSDontWriteUSBStores
+  type: bool
+  value: true
+  description: Avoid creating .DS_Store on USB volumes
+- domain: com.apple.finder
+  key: FXPreferredViewStyle
+  type: string
+  value: Nlsv
+  description: Use list view by default
+- domain: com.apple.finder
+  key: FXPreferredGroupBy
+  type: string
+  value: Name
+  description: Group Finder items by name
+- domain: com.apple.finder
+  key: WarnOnEmptyTrash
+  type: bool
+  value: true
+  description: Warn before emptying Trash
+stable_dock_mission_control:
+- domain: com.apple.dock
+  key: orientation
+  type: string
+  value: left
+  description: Place Dock on the left
+- domain: com.apple.dock
+  key: tilesize
+  type: int
+  value: 36
+  description: Set Dock icon size
+- domain: com.apple.dock
+  key: magnification
+  type: bool
+  value: false
+  description: Disable Dock magnification
+- domain: com.apple.dock
+  key: largesize
+  type: int
+  value: 64
+  description: Set magnified Dock icon size
+- domain: com.apple.dock
+  key: minimize-to-application
+  type: bool
+  value: true
+  description: Minimize windows into application icon
+- domain: com.apple.dock
+  key: mineffect
+  type: string
+  value: scale
+  description: Use scale minimize effect
+- domain: com.apple.dock
+  key: launchanim
+  type: bool
+  value: false
+  description: Disable app launch animations
+- domain: com.apple.dock
+  key: show-process-indicators
+  type: bool
+  value: true
+  description: Show indicators for open applications
+- domain: com.apple.dock
+  key: expose-animation-duration
+  type: float
+  value: 0.1
+  description: Speed up Mission Control animations
+- domain: com.apple.dock
+  key: mru-spaces
+  type: bool
+  value: false
+  description: Don't rearrange Spaces by most recent use
+- domain: com.apple.dock
+  key: autohide-delay
+  type: float
+  value: 0
+  description: Remove auto-hiding Dock delay
+- domain: com.apple.dock
+  key: autohide-time-modifier
+  type: float
+  value: 0
+  description: Remove animation when hiding/showing Dock
+- domain: com.apple.dock
+  key: autohide
+  type: bool
+  value: false
+  description: Keep Dock visible
+- domain: com.apple.dock
+  key: showhidden
+  type: bool
+  value: true
+  description: Make hidden app icons translucent
+- domain: com.apple.dock
+  key: show-recents
+  type: bool
+  value: false
+  description: Don't show recent applications in Dock
+stable_menu_bar_clock:
+- domain: com.apple.menuextra.clock
+  key: IsAnalog
+  type: bool
+  value: false
+  description: Use digital menu bar clock
+- domain: com.apple.menuextra.clock
+  key: ShowAMPM
+  type: bool
+  value: true
+  description: Show AM/PM in menu bar clock
+- domain: com.apple.menuextra.clock
+  key: ShowDate
+  type: bool
+  value: false
+  description: Hide date in menu bar clock
+- domain: com.apple.menuextra.clock
+  key: ShowDayOfWeek
+  type: bool
+  value: true
+  description: Show day of week in menu bar clock
+- domain: com.apple.menuextra.clock
+  key: TimeAnnouncementsEnabled
+  type: bool
+  value: false
+  description: Disable spoken time announcements
+- domain: com.apple.menuextra.clock
+  key: TimeAnnouncementsIntervalIdentifier
+  type: string
+  value: EveryHourInterval
+  description: Set time announcement interval
+stable_safari:
+- domain: com.apple.Safari
+  key: UniversalSearchEnabled
+  type: bool
+  value: false
+  description: Don't send search queries to Apple
+- domain: com.apple.Safari
+  key: SuppressSearchSuggestions
+  type: bool
+  value: true
+  description: Don't send search queries to Apple
+- domain: com.apple.Safari
+  key: ShowFullURLInSmartSearchField
+  type: bool
+  value: true
+  description: Show full URL in address bar
+- domain: com.apple.Safari
+  key: IncludeDevelopMenu
+  type: bool
+  value: true
+  description: Enable Develop menu
+- domain: com.apple.Safari
+  key: WebKitDeveloperExtrasEnabledPreferenceKey
+  type: bool
+  value: true
+  description: Enable Web Inspector
+- domain: com.apple.Safari
+  key: SendDoNotTrackHTTPHeader
+  type: bool
+  value: true
+  description: Enable Do Not Track
+stable_activity_monitor:
+- domain: com.apple.ActivityMonitor
+  key: OpenMainWindow
+  type: bool
+  value: true
+  description: Show main window when launching
+- domain: com.apple.ActivityMonitor
+  key: IconType
+  type: int
+  value: 5
+  description: Visualize CPU usage in Dock icon
+- domain: com.apple.ActivityMonitor
+  key: ShowCategory
+  type: int
+  value: 0
+  description: Show all processes
+- domain: com.apple.ActivityMonitor
+  key: SortColumn
+  type: string
+  value: CPUUsage
+  description: Sort by CPU usage
+- domain: com.apple.ActivityMonitor
+  key: SortDirection
+  type: int
+  value: 0
+  description: Sort direction
+stable_textedit:
+- domain: com.apple.TextEdit
+  key: RichText
+  type: int
+  value: 0
+  description: Use plain text mode for new documents
+- domain: com.apple.TextEdit
+  key: PlainTextEncoding
+  type: int
+  value: 4
+  description: Open files as UTF-8
+- domain: com.apple.TextEdit
+  key: PlainTextEncodingForWrite
+  type: int
+  value: 4
+  description: Save files as UTF-8
+community_system_tweaks:
+- domain: com.apple.LaunchServices
+  key: LSQuarantine
+  type: bool
+  value: false
+  description: Disable 'Are you sure you want to open this application?' dialog
+- domain: NSGlobalDomain
+  key: AppleFontSmoothing
+  type: int
+  value: 1
+  description: Enable subpixel font rendering on non-Apple LCDs
+community_trackpad_advanced:
+- domain: com.apple.AppleMultitouchTrackpad
+  key: ForceSuppressed
+  type: bool
+  value: false
+  description: Do not suppress force click
+- domain: com.apple.AppleMultitouchTrackpad
+  key: TrackpadThreeFingerDrag
+  type: bool
+  value: true
+  description: Enable three-finger drag
+- domain: com.apple.AppleMultitouchTrackpad
+  key: TrackpadFiveFingerPinchGesture
+  type: int
+  value: 2
+  description: Set five-finger pinch gesture
+- domain: com.apple.AppleMultitouchTrackpad
+  key: TrackpadFourFingerHorizSwipeGesture
+  type: int
+  value: 2
+  description: Set four-finger horizontal swipe gesture
+- domain: com.apple.AppleMultitouchTrackpad
+  key: TrackpadFourFingerPinchGesture
+  type: int
+  value: 2
+  description: Set four-finger pinch gesture
+- domain: com.apple.AppleMultitouchTrackpad
+  key: TrackpadFourFingerVertSwipeGesture
+  type: int
+  value: 2
+  description: Set four-finger vertical swipe gesture
+- domain: com.apple.AppleMultitouchTrackpad
+  key: TrackpadThreeFingerHorizSwipeGesture
+  type: int
+  value: 0
+  description: Disable three-finger horizontal swipe gesture
+- domain: com.apple.AppleMultitouchTrackpad
+  key: TrackpadThreeFingerTapGesture
+  type: int
+  value: 0
+  description: Disable three-finger tap gesture
+- domain: com.apple.AppleMultitouchTrackpad
+  key: TrackpadThreeFingerVertSwipeGesture
+  type: int
+  value: 0
+  description: Disable three-finger vertical swipe gesture
+- domain: com.apple.driver.AppleBluetoothMultitouch.trackpad
+  key: TrackpadThreeFingerDrag
+  type: bool
+  value: true
+  description: Enable three-finger drag on Bluetooth trackpad
+- domain: com.apple.driver.AppleBluetoothMultitouch.trackpad
+  key: TrackpadThreeFingerHorizSwipeGesture
+  type: int
+  value: 0
+  description: Disable three-finger horizontal swipe on Bluetooth trackpad
+- domain: com.apple.driver.AppleBluetoothMultitouch.trackpad
+  key: TrackpadThreeFingerVertSwipeGesture
+  type: int
+  value: 0
+  description: Disable three-finger vertical swipe on Bluetooth trackpad
+- domain: com.apple.driver.AppleBluetoothMultitouch.trackpad
+  key: TrackpadFourFingerHorizSwipeGesture
+  type: int
+  value: 2
+  description: Set four-finger horizontal swipe on Bluetooth trackpad
+- domain: com.apple.driver.AppleBluetoothMultitouch.trackpad
+  key: TrackpadFourFingerVertSwipeGesture
+  type: int
+  value: 2
+  description: Set four-finger vertical swipe on Bluetooth trackpad
+- domain: com.apple.AppleMultitouchTrackpad
+  key: TrackpadTwoFingerDoubleTapGesture
+  type: int
+  value: 1
+  description: Set two-finger double tap gesture
+- domain: com.apple.AppleMultitouchTrackpad
+  key: TrackpadTwoFingerFromRightEdgeSwipeGesture
+  type: int
+  value: 3
+  description: Set two-finger right-edge swipe gesture
+- domain: com.apple.AppleMultitouchTrackpad
+  key: TrackpadCornerSecondaryClick
+  type: int
+  value: 0
+  description: Set secondary click corner behavior
+- domain: com.apple.AppleMultitouchTrackpad
+  key: FirstClickThreshold
+  type: int
+  value: 1
+  description: Set first click threshold
+- domain: com.apple.AppleMultitouchTrackpad
+  key: SecondClickThreshold
+  type: int
+  value: 1
+  description: Set second click threshold
+- domain: com.apple.AppleMultitouchTrackpad
+  key: ActuateDetents
+  type: bool
+  value: true
+  description: Enable haptic feedback detents
+- domain: com.apple.AppleMultitouchTrackpad
+  key: UserPreferences
+  type: bool
+  value: true
+  description: Use custom trackpad preferences
+- domain: com.apple.AppleMultitouchTrackpad
+  key: version
+  type: int
+  value: 12
+  description: Trackpad preferences version
+community_finder_icloud:
+- domain: com.apple.finder
+  key: FXICloudDriveDesktop
+  type: bool
+  value: true
+  description: Enable iCloud Drive Desktop sync
+- domain: com.apple.finder
+  key: FXICloudDriveDocuments
+  type: bool
+  value: true
+  description: Enable iCloud Drive Documents sync
+- domain: com.apple.finder
+  key: FXICloudDriveEnabled
+  type: bool
+  value: true
+  description: Enable iCloud Drive integration
+- domain: com.apple.finder
+  key: FXICloudLoggedIn
+  type: bool
+  value: true
+  description: Mark iCloud as signed in for Finder
+community_bluetooth_audio:
+- domain: com.apple.BluetoothAudioAgent
+  key: Apple Bitpool Min (editable)
+  type: int
+  value: 40
+  description: Increase Bluetooth audio quality

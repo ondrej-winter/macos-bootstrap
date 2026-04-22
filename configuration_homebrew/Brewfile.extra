@@ -1,0 +1,25 @@
+# Heavier or more specialized tools kept intentionally
+
+# GNU Compiler Collection for C, C++, and other languages.
+brew "gcc"
+
+# GNU debugger for inspecting and debugging running programs.
+brew "gdb"
+
+# GNU database manager library for key-value data storage.
+brew "gdbm"
+
+# High-level language for technical and scientific computing.
+brew "julia"
+
+# LLVM compiler infrastructure and associated development tools.
+brew "llvm"
+
+# Lightweight scripting language for embedding and automation.
+brew "lua"
+
+# Just-in-time compiled implementation of the Lua language.
+brew "luajit"
+
+# Theorem prover and SMT solver for formal verification and constraints.
+brew "z3"

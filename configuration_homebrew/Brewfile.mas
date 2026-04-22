@@ -1,0 +1,37 @@
+# Mac App Store applications
+
+# Apple's IDE for building apps for macOS, iOS, and other Apple platforms.
+mas "Xcode", id: 497799835
+
+# Apple app for developer news, videos, and WWDC content.
+mas "Apple Developer", id: 640199958
+
+# Multi-factor authentication app for Okta-secured sign-ins.
+mas "Okta Verify", id: 490179405
+
+# Tool for creating and packaging audiobooks from audio files.
+mas "Audiobook Builder 2", id: 1437681957
+
+# Clipboard manager for storing and reusing copied text snippets.
+mas "Maccy", id: 1527619437
+
+# Presentation software for creating slides and talks.
+mas "Keynote", id: 409183694
+
+# Word processing application for documents and writing.
+mas "Pages", id: 409201541
+
+# Spreadsheet application for tables, calculations, and charts.
+mas "Numbers", id: 409203825
+
+# Apple app for testing pre-release versions of applications.
+mas "TestFlight", id: 899247664
+
+# Media player focused on streaming and organizing video libraries.
+mas "Infuse", id: 1136220934
+
+# VPN application for secure and private internet access.
+mas "NordVPN: VPN Fast & Secure", id: 905953485
+
+# Messaging app for WhatsApp chats, calls, and desktop communication.
+mas "WhatsApp Messenger", id: 310633997

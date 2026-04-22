@@ -1,0 +1,24 @@
+# Special commands that need sudo or special handling
+- command: "sudo nvram SystemAudioVolume=' '"
+  description: "Disable boot sound"
+  requires_sudo: true
+
+- command: "defaults -currentHost write -g com.apple.trackpad.threeFingerDragGesture -bool true"
+  description: "Enable current-host three-finger drag gesture"
+  requires_sudo: false
+
+- command: "defaults -currentHost write -g com.apple.trackpad.threeFingerHorizSwipeGesture -int 0"
+  description: "Disable current-host three-finger horizontal swipe gesture"
+  requires_sudo: false
+
+- command: "defaults -currentHost write -g com.apple.trackpad.threeFingerVertSwipeGesture -int 0"
+  description: "Disable current-host three-finger vertical swipe gesture"
+  requires_sudo: false
+
+- command: "chflags nohidden ~/Library"
+  description: "Show Library folder"
+  requires_sudo: false
+
+- command: "sudo chflags nohidden /Volumes"
+  description: "Show Volumes folder"
+  requires_sudo: true

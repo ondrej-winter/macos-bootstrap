@@ -1,0 +1,4 @@
+# Applications to restart after applying settings
+- "Finder"
+- "Dock"
+- "SystemUIServer"

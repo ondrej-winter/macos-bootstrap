@@ -1,0 +1,181 @@
+# Core CLI tools and shell environment
+
+# Search tool for finding text patterns in files and source code.
+brew "ack"
+
+# AWS command-line interface for managing Amazon Web Services.
+brew "awscli"
+
+# Modern Bourne Again SHell for command-line use and scripting.
+brew "bash"
+
+# Tab completion scripts for Bash shell commands.
+brew "bash-completion"
+
+# Cat replacement with syntax highlighting and Git integration.
+brew "bat"
+
+# Root certificate bundle for validating TLS and HTTPS connections.
+brew "ca-certificates"
+
+# GNU core file, shell, and text manipulation utilities.
+brew "coreutils"
+
+# Command-line tool and library for transferring data with URLs.
+brew "curl"
+
+# GNU tools for comparing files and directories.
+brew "diffutils"
+
+# Disk usage and free space viewer with a modern terminal UI.
+brew "duf"
+
+# Modern replacement for ls with icons and rich formatting.
+brew "eza"
+
+# Metadata reader and writer for images, video, and documents.
+brew "exiftool"
+
+# Fast and user-friendly alternative to the find command.
+brew "fd"
+
+# GNU utilities for finding files and processing directory trees.
+brew "findutils"
+
+# Fuzzy finder for quickly searching files, history, and command output.
+brew "fzf"
+
+# GNU implementation of the Awk text processing language.
+brew "gawk"
+
+# GitHub CLI for working with repositories, PRs, and issues.
+brew "gh"
+
+# Distributed version control system for source code and configuration.
+brew "git"
+
+# GNU code formatter for C and related programming languages.
+brew "gnu-indent"
+
+# GNU version of sed for stream editing text.
+brew "gnu-sed"
+
+# GNU implementation of tar for creating and extracting archives.
+brew "gnu-tar"
+
+# GNU time utility for measuring command resource usage.
+brew "gnu-time"
+
+# Encryption and signing tools implementing OpenPGP standards.
+brew "gnupg"
+
+# TLS library and command-line tools for secure network communication.
+brew "gnutls"
+
+# GNU patch utility for applying unified diff patches.
+brew "gpatch"
+
+# GNU grep for searching text using regular expressions.
+brew "grep"
+
+# Interactive process viewer and system monitor for the terminal.
+brew "htop"
+
+# Command-line JSON processor for filtering and transforming data.
+brew "jq"
+
+# Terminal pager for viewing long text output one screen at a time.
+brew "less"
+
+# Fast compression library and command-line utilities.
+brew "lz4"
+
+# Real-time data compression library and utilities.
+brew "lzo"
+
+# Macro processing language often used by build systems.
+brew "m4"
+
+# Build automation tool for running Makefile-based tasks.
+brew "make"
+
+# Mac App Store CLI for installing and managing MAS apps.
+brew "mas"
+
+# Media metadata inspection tool for audio and video files.
+brew "media-info"
+
+# Simple terminal text editor for quick file editing.
+brew "nano"
+
+# Interactive disk usage analyzer for terminal use.
+brew "ncdu"
+
+# Terminal handling library for text-based user interfaces.
+brew "ncurses"
+
+# Modern Vim-based text editor with extensibility and Lua support.
+brew "neovim"
+
+# Secure shell tools for remote login and file transfer.
+brew "openssh"
+
+# Cryptography toolkit and SSL/TLS libraries.
+brew "openssl"
+
+# Archive utility for 7z and other compressed file formats.
+brew "p7zip"
+
+# Universal document converter for Markdown, HTML, PDF, and more.
+brew "pandoc"
+
+# Tool for installing and running Python applications in isolated environments.
+brew "pipx"
+
+# Python 3.13 interpreter and standard tooling.
+brew "python@3.13"
+
+# Line-editing library used by interactive command-line programs.
+brew "readline"
+
+# Fast recursive search tool also known as ripgrep.
+brew "rg"
+
+# Fast and efficient file synchronization and copy utility.
+brew "rsync"
+
+# Utility for extracting RAR archive files.
+brew "unrar"
+
+# Recursive directory listing tool showing file structure as a tree.
+brew "tree"
+
+# Fast Python package and project manager.
+brew "uv"
+
+# Runs commands repeatedly and shows updated output.
+brew "watch"
+
+# Network downloader for retrieving files over HTTP, HTTPS, and FTP.
+brew "wget"
+
+# Compression library and utilities for XZ archives.
+brew "xz"
+
+# Command-line processor for YAML, JSON, and structured data.
+brew "yq"
+
+# Utility for creating ZIP archive files.
+brew "zip"
+
+# Z shell for interactive terminal use and scripting.
+brew "zsh"
+
+# Fish-style command suggestions for the Z shell.
+brew "zsh-autosuggestions"
+
+# Additional completion definitions for the Z shell.
+brew "zsh-completions"
+
+# Syntax highlighting for commands entered in the Z shell.
+brew "zsh-syntax-highlighting"

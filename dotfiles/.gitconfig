@@ -1,0 +1,117 @@
+# Git Configuration File
+# Copy this to ~/.gitconfig or customize before running bootstrap
+
+[user]
+    # Update with your information
+    name = Ondrej Winter
+    email = ondrej.winter@gmail.com
+
+[core]
+    editor = code --wait
+    autocrlf = input
+    safecrlf = warn
+    excludesfile = ~/.gitignore_global
+    # Use delta for better diffs (install via: brew install git-delta)
+    pager = delta
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true
+    light = false
+    line-numbers = true
+    side-by-side = true
+
+[merge]
+    conflictstyle = diff3
+
+[diff]
+    colorMoved = default
+
+[init]
+    defaultBranch = main
+
+[pull]
+    rebase = false
+
+[push]
+    default = simple
+    followTags = true
+
+[fetch]
+    prune = true
+
+[rerere]
+    enabled = true
+
+[color]
+    ui = auto
+    branch = auto
+    diff = auto
+    status = auto
+
+[color "branch"]
+    current = yellow reverse
+    local = yellow
+    remote = green
+
+[color "diff"]
+    meta = yellow bold
+    frag = magenta bold
+    old = red bold
+    new = green bold
+
+[color "status"]
+    added = yellow
+    changed = green
+    untracked = cyan
+
+[alias]
+    # Short aliases
+    st = status
+    co = checkout
+    br = branch
+    ci = commit
+    unstage = reset HEAD --
+    
+    # Logging
+    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+    log-graph = log --graph --oneline --decorate --all
+    log-pretty = log --pretty=format:'%C(yellow)%h%Creset %C(white)%s%Creset %C(cyan)%cr%Creset %C(blue)<%an>%Creset' --abbrev-commit
+    
+    # Useful commands
+    amend = commit --amend --no-edit
+    last = log -1 HEAD --stat
+    changes = diff --name-status
+    contributors = shortlog --summary --numbered
+    undo = reset --soft HEAD^
+    
+    # Branch management
+    branches = branch -a
+    tags = tag -l
+    remotes = remote -v
+    
+    # Clean up
+    cleanup = "!git branch --merged | grep -v '\\*\\|main\\|master\\|develop' | xargs -n 1 git branch -d"
+
+[help]
+    autocorrect = 1
+
+[credential]
+    helper = osxkeychain
+
+[filter "lfs"]
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true
+
+[url "https://github.com/"]
+    insteadOf = gh:
+
+[url "https://gitlab.com/"]
+    insteadOf = gl:
+
+[url "https://bitbucket.org/"]
+    insteadOf = bb:
