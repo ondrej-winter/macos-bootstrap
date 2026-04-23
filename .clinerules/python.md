@@ -1,7 +1,7 @@
 # Python Rules
 
 ## Scope
-- Applies to `bootstrap.py` and files in `modules/`.
+- Applies to `bootstrap_config.py`, `bootstrap_brew.py`, and files in `modules/`.
 
 ## Style
 - Follow existing Python style already present in the repository.

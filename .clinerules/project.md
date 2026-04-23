@@ -6,8 +6,8 @@
 
 ## Primary Entry Points
 - `entrypoint.sh` is the public shell entrypoint and bootstrap orchestrator.
-- `brewfile_install.py` handles Homebrew Brewfile processing.
-- `bootstrap.py` loads configuration and applies directory, dotfile, and macOS settings changes.
+- `bootstrap_brew.py` handles Homebrew Brewfile processing.
+- `bootstrap_config.py` loads configuration and applies directory, dotfile, and macOS settings changes.
 
 ## Repository Structure
 - `configuration/` contains split YAML configuration files.

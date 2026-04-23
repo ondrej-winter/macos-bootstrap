@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""macOS Brewfile installation phase implemented in Python."""
+"""macOS Homebrew Brewfile installation phase implemented in Python."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ def print_banner() -> None:
     print()
     print("╔════════════════════════════════════════════════════════════╗")
     print("║                                                            ║")
-    print("║           macOS Homebrew Brewfile Installation             ║")
+    print("║               macOS Bootstrap Brew Phase                  ║")
     print("║                                                            ║")
     print("╚════════════════════════════════════════════════════════════╝")
     print()
@@ -54,9 +54,6 @@ def main() -> int:
 
     print()
 
-    if Path("/opt/homebrew/bin/brew").exists() or Path("/usr/local/bin/brew").exists():
-        pass
-
     from shutil import which
 
     if which("brew") is None:
@@ -76,13 +73,13 @@ def main() -> int:
     print()
     if status == 0:
         log_success(logger, "════════════════════════════════════════════════════════════")
-        log_success(logger, "Brewfile phase complete! 🎉")
+        log_success(logger, "Brew phase complete! 🎉")
         log_success(logger, "════════════════════════════════════════════════════════════")
         print()
         return 0
 
     log_warning(logger, "════════════════════════════════════════════════════════════")
-    log_warning(logger, "Brewfile phase completed with warnings")
+    log_warning(logger, "Brew phase completed with warnings")
     log_warning(logger, "════════════════════════════════════════════════════════════")
     if installer.log_file is not None:
         log_warning(logger, f"Some Brewfile entries failed during install/reinstall. Review: {installer.log_file}")

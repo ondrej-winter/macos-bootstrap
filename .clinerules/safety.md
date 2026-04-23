@@ -6,7 +6,7 @@
 
 ## Bootstrap Stability
 - Avoid large architectural rewrites of the phased bootstrap flow.
-- Preserve the contract between `entrypoint.sh`, `brewfile_install.py`, and `bootstrap.py`.
+- Preserve the contract between `entrypoint.sh`, `bootstrap_brew.py`, and `bootstrap_config.py`.
 - Prefer incremental changes that keep the bootstrap recoverable and understandable.
 
 ## Operational Safety

@@ -244,4 +244,4 @@ def confirm_action(prompt: str, default: bool = True) -> bool:
         elif response in ['n', 'no']:
             return False
         else:
-            print("Please answer 'y' or 'n'")
+            logging.getLogger('bootstrap').warning("Please answer 'y' or 'n'")

@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
 ################################################################################
-# Local Python initialization entrypoint
-# Prepares a repository-local uv installation and ensures local Python is available.
+# macOS bootstrap entrypoint
+# Prepares repository-local uv/Python, runs the Brew phase, and launches
+# the Python configuration phase.
 ################################################################################
 
 set -euo pipefail
@@ -16,12 +17,14 @@ readonly LOCAL_UV_BIN="${LOCAL_BIN_DIR}/uv"
 readonly LOCAL_PYTHON_DIR="${LOCAL_TOOLS_DIR}/python"
 readonly UV_DOWNLOAD_URL="https://astral.sh/uv/install.sh"
 BREWFILE_ARGS=()
+BOOTSTRAP_ARGS=()
+SKIP_BREWFILE=0
 
 print_banner() {
     echo ""
     echo "╔════════════════════════════════════════════════════════════╗"
     echo "║                                                            ║"
-    echo "║              Local Python Initialization Entry             ║"
+    echo "║                macOS Bootstrap Entrypoint                 ║"
     echo "║                                                            ║"
     echo "╚════════════════════════════════════════════════════════════╝"
     echo ""
@@ -31,16 +34,26 @@ print_help() {
     cat <<EOF_HELP
 Usage: ./entrypoint.sh [options]
 
-Initializes repository-local uv and ensures the required local Python is
-available locally for this repository under .bootstrap-tools, then runs the
-Python-based Brewfile installation phase.
+Initializes repository-local uv and the required local Python under
+.bootstrap-tools, then runs the Brew phase followed by the Python
+configuration phase.
 
 Wrapper options:
+  --skip-brewfile         Skip the Brew phase
   --reinstall-existing    Reinstall already-installed formulae and casks
+  --config PATH           Path to configuration file or directory
+  --skip-dotfiles         Skip dotfiles installation
+  --skip-macos-settings   Skip macOS system settings
+  --skip-directories      Skip directory creation
+  --dry-run               Show what would be done without making changes
+  --log-file PATH         Write bootstrap_config.py logs to PATH
+  --verbose               Enable verbose logging
   -h, --help              Show this help message and exit
 
 Examples:
   ./entrypoint.sh
+  ./entrypoint.sh --reinstall-existing --verbose
+  ./entrypoint.sh --skip-brewfile --dry-run
 EOF_HELP
 }
 
@@ -84,29 +97,53 @@ ensure_local_python() {
 }
 
 run_brewfile_install() {
-    log_info "Running Python-based Brewfile installation..."
-    UV_PYTHON_INSTALL_DIR="$LOCAL_PYTHON_DIR" "$LOCAL_UV_BIN" run --python 3.13 python "$SCRIPT_DIR/brewfile_install.py" "${BREWFILE_ARGS[@]}"
+    log_info "Running Python-based Brew phase..."
+    UV_PYTHON_INSTALL_DIR="$LOCAL_PYTHON_DIR" "$LOCAL_UV_BIN" run --python 3.13 python "$SCRIPT_DIR/bootstrap_brew.py" "${BREWFILE_ARGS[@]}"
+}
+
+run_bootstrap_configuration() {
+    log_info "Running Python-based configuration phase..."
+    UV_PYTHON_INSTALL_DIR="$LOCAL_PYTHON_DIR" "$LOCAL_UV_BIN" run --python 3.13 python "$SCRIPT_DIR/bootstrap_config.py" "${BOOTSTRAP_ARGS[@]}"
 }
 
 parse_arguments() {
-    local arg
-
-    for arg in "$@"; do
-        case "$arg" in
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
             -h|--help)
                 print_help
                 exit 0
                 ;;
+            --skip-brewfile)
+                SKIP_BREWFILE=1
+                ;;
             --reinstall-existing)
-                BREWFILE_ARGS+=("$arg")
+                BREWFILE_ARGS+=("$1")
+                ;;
+            --config|--log-file)
+                if [ "$#" -lt 2 ]; then
+                    log_error "Missing value for argument: $1"
+                    echo ""
+                    print_help
+                    exit 1
+                fi
+                BOOTSTRAP_ARGS+=("$1" "$2")
+                shift
+                ;;
+            --skip-dotfiles|--skip-macos-settings|--skip-directories|--dry-run)
+                BOOTSTRAP_ARGS+=("$1")
+                ;;
+            --verbose)
+                BREWFILE_ARGS+=("$1")
+                BOOTSTRAP_ARGS+=("$1")
                 ;;
             *)
-                log_error "Unsupported argument: $arg"
+                log_error "Unsupported argument: $1"
                 echo ""
                 print_help
                 exit 1
                 ;;
         esac
+        shift
     done
 }
 
@@ -115,19 +152,27 @@ main() {
 
     print_banner
 
-    log_info "Starting local Python initialization entrypoint..."
+    log_info "Starting macOS bootstrap entrypoint..."
 
     print_phase "Phase 1: Repository-local uv"
 
     ensure_local_uv
     ensure_local_python
 
-    print_phase "Phase 2: Homebrew Brewfile installation"
-    run_brewfile_install
+    if [ "$SKIP_BREWFILE" -eq 1 ]; then
+        print_phase "Phase 2: Homebrew Brew installation"
+        log_warning "Skipping Brew phase"
+    else
+        print_phase "Phase 2: Homebrew Brew installation"
+        run_brewfile_install
+    fi
+
+    print_phase "Phase 3: Python configuration"
+    run_bootstrap_configuration
 
     echo ""
     log_success "════════════════════════════════════════════════════════════"
-    log_success "Entrypoint initialization complete! 🎉"
+    log_success "Bootstrap entrypoint complete! 🎉"
     log_success "════════════════════════════════════════════════════════════"
     echo ""
 }
