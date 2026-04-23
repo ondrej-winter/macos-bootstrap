@@ -15,6 +15,7 @@ readonly LOCAL_BIN_DIR="${LOCAL_TOOLS_DIR}/bin"
 readonly LOCAL_UV_BIN="${LOCAL_BIN_DIR}/uv"
 readonly LOCAL_PYTHON_DIR="${LOCAL_TOOLS_DIR}/python"
 readonly UV_DOWNLOAD_URL="https://astral.sh/uv/install.sh"
+BREWFILE_ARGS=()
 
 print_banner() {
     echo ""
@@ -28,12 +29,14 @@ print_banner() {
 
 print_help() {
     cat <<EOF_HELP
-Usage: ./entrypoint.sh
+Usage: ./entrypoint.sh [options]
 
 Initializes repository-local uv and ensures the required local Python is
-available locally for this repository under .bootstrap-tools.
+available locally for this repository under .bootstrap-tools, then runs the
+Python-based Brewfile installation phase.
 
 Wrapper options:
+  --reinstall-existing    Reinstall already-installed formulae and casks
   -h, --help              Show this help message and exit
 
 Examples:
@@ -80,6 +83,11 @@ ensure_local_python() {
     log_success "Python 3.13 is available through repository-local uv"
 }
 
+run_brewfile_install() {
+    log_info "Running Python-based Brewfile installation..."
+    UV_PYTHON_INSTALL_DIR="$LOCAL_PYTHON_DIR" "$LOCAL_UV_BIN" run --python 3.13 python "$SCRIPT_DIR/brewfile_install.py" "${BREWFILE_ARGS[@]}"
+}
+
 parse_arguments() {
     local arg
 
@@ -88,6 +96,9 @@ parse_arguments() {
             -h|--help)
                 print_help
                 exit 0
+                ;;
+            --reinstall-existing)
+                BREWFILE_ARGS+=("$arg")
                 ;;
             *)
                 log_error "Unsupported argument: $arg"
@@ -111,9 +122,12 @@ main() {
     ensure_local_uv
     ensure_local_python
 
+    print_phase "Phase 2: Homebrew Brewfile installation"
+    run_brewfile_install
+
     echo ""
     log_success "════════════════════════════════════════════════════════════"
-    log_success "Local Python initialization complete! 🎉"
+    log_success "Entrypoint initialization complete! 🎉"
     log_success "════════════════════════════════════════════════════════════"
     echo ""
 }

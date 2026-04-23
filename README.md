@@ -7,7 +7,7 @@
 This project automates the setup of a fresh **Apple Silicon macOS** machine in three phases:
 
 1. **`entrypoint.sh`** validates the host, installs prerequisites, bootstraps a temporary local `uv`, and orchestrates the run
-2. **`brewfile_install.sh`** installs packages from the split Brewfiles in `configuration_homebrew/`
+2. **`brewfile_install.py`** installs packages from the split Brewfiles in `configuration_homebrew/`
 3. **`bootstrap.py`** applies filesystem, dotfile, and macOS configuration from YAML files
 
 Together, they provision a new Mac with:
@@ -33,7 +33,7 @@ Together, they provision a new Mac with:
 **`bootstrap.sh` (compatibility shim)**
 - ✅ Forwards legacy invocations to `entrypoint.sh`
 
-**`brewfile_install.sh` (internal Brewfile phase)**
+**`brewfile_install.py` (internal Brewfile phase)**
 - ✅ Install or reinstall packages from split Brewfiles in `configuration_homebrew/`
 - ✅ Track per-item installation status and logging
 
@@ -49,7 +49,7 @@ Together, they provision a new Mac with:
 bootstrap_macos/
 ├── entrypoint.sh          # Main public entry point / orchestrator
 ├── bootstrap.sh           # Compatibility wrapper forwarding to entrypoint.sh
-├── brewfile_install.sh    # Internal Homebrew Brewfile phase
+├── brewfile_install.py    # Internal Homebrew Brewfile phase
 ├── bootstrap.py           # Python configuration script
 ├── configuration/         # Split YAML configuration by concern
 │   ├── directories.yaml
@@ -495,13 +495,13 @@ This verifies the Python entrypoint and configuration workflow.
 ### Validate the Brewfile Phase Independently
 
 ```bash
-./brewfile_install.sh
+python3 brewfile_install.py
 ```
 
 Force reinstall of already-installed formulae and casks:
 
 ```bash
-./brewfile_install.sh --reinstall-existing
+python3 brewfile_install.py --reinstall-existing
 ```
 
 > Note: there is currently no `tests/` directory in this repository, so automated test commands should be added together with a test suite.
