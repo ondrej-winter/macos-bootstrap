@@ -61,7 +61,7 @@ def main() -> int:
 
     if which("brew") is None:
         log_error(logger, "Homebrew not found. This script only handles Brewfile installation.")
-        log_info(logger, "Run bootstrap.sh or entrypoint.sh to install prerequisites and orchestrate the full bootstrap process.")
+        log_info(logger, "Run entrypoint.sh to install prerequisites and orchestrate the full bootstrap process.")
         return 1
 
     log_success(logger, "Homebrew is available")

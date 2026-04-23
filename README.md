@@ -30,9 +30,6 @@ Together, they provision a new Mac with:
 - ✅ Run the Brewfile phase
 - ✅ Bootstrap a temporary repository-local `uv`, install Python through it, and launch the Python bootstrap entrypoint
 
-**`bootstrap.sh` (compatibility shim)**
-- ✅ Forwards legacy invocations to `entrypoint.sh`
-
 **`brewfile_install.py` (internal Brewfile phase)**
 - ✅ Install or reinstall packages from split Brewfiles in `configuration_homebrew/`
 - ✅ Track per-item installation status and logging
@@ -48,7 +45,6 @@ Together, they provision a new Mac with:
 ```
 bootstrap_macos/
 ├── entrypoint.sh          # Main public entry point / orchestrator
-├── bootstrap.sh           # Compatibility wrapper forwarding to entrypoint.sh
 ├── brewfile_install.py    # Internal Homebrew Brewfile phase
 ├── bootstrap.py           # Python configuration script
 ├── configuration/         # Split YAML configuration by concern
@@ -149,8 +145,6 @@ Wrapper-specific options:
 - `--help` / `-h` — show usage without running prerequisite checks or installs
 - `--skip-brewfile` — skip the Brewfile phase before launching `bootstrap.py`
 - `--reinstall-existing` — reinstall already-installed Brewfile formulae and casks during the Brewfile phase
-
-`bootstrap.sh` is still available as a deprecated compatibility wrapper and simply forwards to `entrypoint.sh`.
 
 All other options shown above are forwarded to `bootstrap.py`, which currently supports:
 
