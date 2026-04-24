@@ -164,6 +164,23 @@ All other options shown above are forwarded to `bootstrap_config.py`, which curr
 - `--log-file`
 - `--verbose`
 
+In addition to the existing console output and optional `--log-file`, the Python bootstrap entrypoints now also write a separate human-readable audit log to `logs/` with timestamped filenames such as:
+
+```text
+logs/audit-bootstrap-config-YYYYMMDD-HHMMSS.log
+logs/audit-bootstrap-brew-YYYYMMDD-HHMMSS.log
+```
+
+These audit logs are designed for later review and compliance-style reporting. They record business-level events in a readable multi-line format, including:
+
+- run start and completion
+- configuration load success or failure
+- phase started, skipped, completed, or failed
+- directory creation outcomes
+- dotfile backup and installation outcomes
+- macOS setting and special command outcomes
+- Brewfile entry install / reinstall / skip / failure outcomes
+
 ## 🔧 Customization
 
 ### 1. Edit Configuration (`configuration/`)

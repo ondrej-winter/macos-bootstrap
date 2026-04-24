@@ -2,12 +2,13 @@
 
 import logging
 import os
+import shlex
 import shutil
 import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Sequence
+from typing import Any, Optional, Sequence
 
 
 class LogStyles:
@@ -39,6 +40,117 @@ class ConsoleLogFormatter(logging.Formatter):
         if color:
             return f"{color}{prefix}{LogStyles.RESET} {message}"
         return f"{prefix} {message}"
+
+
+class AuditLogger:
+    """Human-readable audit logger for business-level bootstrap events."""
+
+    def __init__(self, log_file: Path, run_id: str, command_name: str, dry_run: bool = False) -> None:
+        self.log_file = log_file
+        self.run_id = run_id
+        self.command_name = command_name
+        self.dry_run = dry_run
+        self.log_file.parent.mkdir(parents=True, exist_ok=True)
+
+        with self.log_file.open('w', encoding='utf-8') as handle:
+            handle.write("macOS Bootstrap Audit Log\n")
+            handle.write(f"Run ID: {self.run_id}\n")
+            handle.write(f"Command: {self.command_name}\n")
+            handle.write(f"Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+            handle.write(f"Dry Run: {'yes' if self.dry_run else 'no'}\n")
+            handle.write("\n")
+
+    def log_event(
+        self,
+        *,
+        phase: str,
+        action: str,
+        status: str,
+        target: str | None = None,
+        summary: str | None = None,
+        command: str | Sequence[str] | None = None,
+        details: str | Sequence[str] | None = None,
+    ) -> None:
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        detail_lines: list[str] = []
+        rendered_command = render_command(command) if command is not None else None
+
+        if isinstance(details, str):
+            detail_lines = details.splitlines() or [details]
+        elif details is not None:
+            for item in details:
+                detail_lines.extend(str(item).splitlines() or [str(item)])
+
+        with self.log_file.open('a', encoding='utf-8') as handle:
+            handle.write("=== EVENT START ===\n")
+            handle.write(f"Time: {timestamp}\n")
+            handle.write(f"Run ID: {self.run_id}\n")
+            handle.write(f"Command: {self.command_name}\n")
+            handle.write(f"Phase: {phase}\n")
+            handle.write(f"Action: {action}\n")
+            if target:
+                handle.write(f"Target: {target}\n")
+            handle.write(f"Status: {status}\n")
+            handle.write(f"Dry Run: {'yes' if self.dry_run else 'no'}\n")
+            if summary:
+                handle.write(f"Summary: {summary}\n")
+            if rendered_command:
+                handle.write("Command:\n")
+                handle.write(f"  {rendered_command}\n")
+            if detail_lines:
+                handle.write("Details:\n")
+                for line in detail_lines:
+                    handle.write(f"  {line}\n")
+            handle.write("=== EVENT END ===\n\n")
+
+
+def initialize_audit_logger(
+    logger: logging.Logger,
+    *,
+    script_dir: Path,
+    command_name: str,
+    dry_run: bool = False,
+) -> AuditLogger:
+    """Create and attach a human-readable audit logger to the bootstrap logger."""
+    run_id = datetime.now().strftime('%Y%m%d-%H%M%S')
+    audit_file = script_dir / 'logs' / f'audit-{command_name}-{run_id}.log'
+    audit_logger = AuditLogger(audit_file, run_id=run_id, command_name=command_name, dry_run=dry_run)
+    setattr(logger, 'audit_logger', audit_logger)
+    return audit_logger
+
+
+def log_audit_event(
+    logger: logging.Logger,
+    *,
+    phase: str,
+    action: str,
+    status: str,
+    target: str | None = None,
+    summary: str | None = None,
+    command: str | Sequence[str] | None = None,
+    details: str | Sequence[str] | None = None,
+) -> None:
+    """Write a business-level audit event when audit logging is enabled."""
+    audit_logger = getattr(logger, 'audit_logger', None)
+    if audit_logger is None:
+        return
+    audit_logger.log_event(
+        phase=phase,
+        action=action,
+        status=status,
+        target=target,
+        summary=summary,
+        command=command,
+        details=details,
+    )
+
+
+def get_audit_log_path(logger: logging.Logger) -> Path | None:
+    """Return the attached audit log path if available."""
+    audit_logger = getattr(logger, 'audit_logger', None)
+    if audit_logger is None:
+        return None
+    return audit_logger.log_file
 
 
 def setup_logging(log_file: Optional[str] = None, verbose: bool = False) -> logging.Logger:
@@ -98,6 +210,23 @@ def log_error(logger: logging.Logger, message: str) -> None:
     logger.error(message)
 
 
+def format_audit_details(details: dict[str, Any]) -> list[str]:
+    """Format a simple mapping into readable audit detail lines."""
+    lines: list[str] = []
+    for key, value in details.items():
+        if value is None:
+            continue
+        lines.append(f"{key}: {value}")
+    return lines
+
+
+def render_command(command: str | Sequence[str]) -> str:
+    """Render a command into a human-readable shell-safe string."""
+    if isinstance(command, str):
+        return command
+    return ' '.join(shlex.quote(part) for part in command)
+
+
 def expand_path(path: str) -> Path:
     """
     Expand user path and return Path object.
@@ -141,7 +270,10 @@ def run_command(
     logger: logging.Logger,
     check: bool = True,
     shell: bool = False,
-    capture_output: bool = False
+    capture_output: bool = False,
+    audit_phase: str | None = None,
+    audit_action: str | None = None,
+    audit_target: str | None = None,
 ) -> subprocess.CompletedProcess:
     """
     Run a command with proper error handling.
@@ -162,6 +294,16 @@ def run_command(
     command_display = command if isinstance(command, str) else ' '.join(command)
     try:
         logger.debug(f"Running command: {command_display}")
+        if audit_phase and audit_action:
+            log_audit_event(
+                logger,
+                phase=audit_phase,
+                action=audit_action,
+                status='started',
+                target=audit_target,
+                summary='Executing command',
+                command=command,
+            )
         result = subprocess.run(
             command,
             shell=shell,
@@ -169,6 +311,17 @@ def run_command(
             capture_output=capture_output,
             text=True
         )
+        if audit_phase and audit_action:
+            log_audit_event(
+                logger,
+                phase=audit_phase,
+                action=audit_action,
+                status='ok' if result.returncode == 0 else 'failed',
+                target=audit_target,
+                summary='Command execution finished',
+                command=command,
+                details=[f'exit_code: {result.returncode}'],
+            )
         if not check and result.returncode != 0:
             logger.debug(
                 f"Command returned non-zero exit code {result.returncode}: {command_display}"
@@ -179,6 +332,17 @@ def run_command(
     except subprocess.CalledProcessError as e:
         log_error(logger, f"Command failed: {command_display}")
         log_error(logger, f"Exit code: {e.returncode}")
+        if audit_phase and audit_action:
+            log_audit_event(
+                logger,
+                phase=audit_phase,
+                action=audit_action,
+                status='failed',
+                target=audit_target,
+                summary='Command execution raised an error',
+                command=command,
+                details=[f'exit_code: {e.returncode}'],
+            )
         if capture_output and e.stderr:
             log_error(logger, f"Error output: {e.stderr}")
         raise

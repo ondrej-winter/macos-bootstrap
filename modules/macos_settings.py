@@ -4,6 +4,7 @@ import logging
 from typing import Any, Dict, List
 
 from .utils import (
+    log_audit_event,
     run_command,
     restart_application,
     log_info,
@@ -82,8 +83,28 @@ class MacOSSettingsManager:
             self.logger.debug(f"Applying: {description}")
             if self.dry_run:
                 log_info(self.logger, f"[dry-run] Would apply setting: {description}")
+                log_audit_event(
+                    self.logger,
+                    phase="macos",
+                    action="setting-apply",
+                    status="dry-run",
+                    target=f"{domain}.{key}",
+                    summary="macOS setting would be applied in dry-run mode",
+                    command=command,
+                    details=[f"description: {description}", f"value_type: {value_type}", f"value: {converted_value}"],
+                )
             else:
                 run_command(command, self.logger, check=True, capture_output=True)
+                log_audit_event(
+                    self.logger,
+                    phase="macos",
+                    action="setting-apply",
+                    status="ok",
+                    target=f"{domain}.{key}",
+                    summary="macOS setting applied",
+                    command=command,
+                    details=[f"description: {description}", f"value_type: {value_type}", f"value: {converted_value}"],
+                )
             
             return True
         
@@ -91,6 +112,16 @@ class MacOSSettingsManager:
             log_error(
                 self.logger,
                 f"Failed to apply setting '{description}': {e}"
+            )
+            log_audit_event(
+                self.logger,
+                phase="macos",
+                action="setting-apply",
+                status="failed",
+                target=f"{domain}.{key}",
+                summary="Failed to apply macOS setting",
+                command=command,
+                details=[f"description: {description}", f"error: {e}"],
             )
             return False
     
@@ -113,6 +144,15 @@ class MacOSSettingsManager:
         fail_count = 0
         
         log_info(self.logger, f"Applying {category} settings...")
+        log_audit_event(
+            self.logger,
+            phase="macos",
+            action="settings-category-started",
+            status="started",
+            target=category,
+            summary=f"Applying settings category '{category}'",
+            details=[f"setting_count: {len(settings)}"],
+        )
         
         for setting in settings:
             domain = setting.get('domain')
@@ -124,6 +164,15 @@ class MacOSSettingsManager:
                 log_error(
                     self.logger,
                     f"Invalid setting configuration: {setting}"
+                )
+                log_audit_event(
+                    self.logger,
+                    phase="macos",
+                    action="setting-validate",
+                    status="failed",
+                    target=category,
+                    summary="Invalid macOS setting configuration",
+                    details=str(setting),
                 )
                 fail_count += 1
                 continue
@@ -140,6 +189,15 @@ class MacOSSettingsManager:
             else:
                 fail_count += 1
         
+        log_audit_event(
+            self.logger,
+            phase="macos",
+            action="settings-category-completed",
+            status="ok" if fail_count == 0 else "failed",
+            target=category,
+            summary=f"Completed settings category '{category}'",
+            details=[f"successful: {success_count}", f"failed: {fail_count}"],
+        )
         return success_count, fail_count
     
     def apply_all_settings(self, macos_defaults: Dict) -> bool:
@@ -153,6 +211,14 @@ class MacOSSettingsManager:
             True if all settings applied successfully, False otherwise
         """
         log_info(self.logger, "Configuring macOS system preferences...")
+        log_audit_event(
+            self.logger,
+            phase="macos",
+            action="settings-batch-started",
+            status="started",
+            summary="Applying configured macOS settings",
+            details=[f"category_count: {len(macos_defaults)}"],
+        )
         
         # Close System Preferences to avoid conflicts
         try:
@@ -180,6 +246,14 @@ class MacOSSettingsManager:
                     self.logger,
                     f"Skipping invalid category: {category}"
                 )
+                log_audit_event(
+                    self.logger,
+                    phase="macos",
+                    action="settings-category-validate",
+                    status="failed",
+                    target=category,
+                    summary="Skipping invalid macOS settings category because it is not a list",
+                )
                 continue
             
             success, fail = self.apply_settings_category(category, settings)
@@ -192,11 +266,27 @@ class MacOSSettingsManager:
                 self.logger,
                 f"Successfully applied all {total_success} settings"
             )
+            log_audit_event(
+                self.logger,
+                phase="macos",
+                action="settings-batch-completed",
+                status="ok",
+                summary="Applied all configured macOS settings successfully",
+                details=[f"successful: {total_success}", f"failed: {total_fail}"],
+            )
             return True
         else:
             log_warning(
                 self.logger,
                 f"Applied {total_success} settings, {total_fail} failed"
+            )
+            log_audit_event(
+                self.logger,
+                phase="macos",
+                action="settings-batch-completed",
+                status="failed",
+                summary="Applied macOS settings with some failures",
+                details=[f"successful: {total_success}", f"failed: {total_fail}"],
             )
             return False
     
@@ -214,6 +304,14 @@ class MacOSSettingsManager:
             return True
         
         log_info(self.logger, "Running special configuration commands...")
+        log_audit_event(
+            self.logger,
+            phase="macos",
+            action="special-commands-started",
+            status="started",
+            summary="Running special macOS configuration commands",
+            details=[f"command_count: {len(commands)}"],
+        )
         
         success_count = 0
         fail_count = 0
@@ -229,6 +327,7 @@ class MacOSSettingsManager:
                     self.logger,
                     f"Invalid command configuration (choose either 'command' or 'shell_command'): {cmd_config}"
                 )
+                log_audit_event(self.logger, phase="macos", action="special-command-validate", status="failed", summary="Invalid special command configuration: both command and shell_command were provided", details=str(cmd_config))
                 fail_count += 1
                 continue
 
@@ -238,6 +337,7 @@ class MacOSSettingsManager:
                         self.logger,
                         f"Invalid command configuration ('command' must be a list of strings): {cmd_config}"
                     )
+                    log_audit_event(self.logger, phase="macos", action="special-command-validate", status="failed", summary="Invalid special command list configuration", details=str(cmd_config))
                     fail_count += 1
                     continue
                 command = [str(expand_path(arg)) if '~' in arg else arg for arg in command]
@@ -247,10 +347,12 @@ class MacOSSettingsManager:
                         self.logger,
                         f"Invalid command configuration ('shell_command' must be a string): {cmd_config}"
                     )
+                    log_audit_event(self.logger, phase="macos", action="special-command-validate", status="failed", summary="Invalid special shell command configuration", details=str(cmd_config))
                     fail_count += 1
                     continue
             else:
                 log_error(self.logger, f"Invalid command configuration: {cmd_config}")
+                log_audit_event(self.logger, phase="macos", action="special-command-validate", status="failed", summary="Invalid special command configuration", details=str(cmd_config))
                 fail_count += 1
                 continue
             
@@ -262,6 +364,16 @@ class MacOSSettingsManager:
                 
                 if self.dry_run:
                     log_info(self.logger, f"[dry-run] Would run command: {description}")
+                    log_audit_event(
+                        self.logger,
+                        phase="macos",
+                        action="special-command-run",
+                        status="dry-run",
+                        target=str(description),
+                        summary="Special command would be executed in dry-run mode",
+                        command=command if command else shell_command,
+                        details=[f"requires_sudo: {requires_sudo}"],
+                    )
                     success_count += 1
                 else:
                     result = run_command(
@@ -272,16 +384,37 @@ class MacOSSettingsManager:
                         capture_output=True
                     )
                     if result.returncode == 0:
+                        log_audit_event(
+                            self.logger,
+                            phase="macos",
+                            action="special-command-run",
+                            status="ok",
+                            target=str(description),
+                            summary="Special command executed successfully",
+                            command=command if command else shell_command,
+                            details=[f"requires_sudo: {requires_sudo}"],
+                        )
                         success_count += 1
                     else:
                         log_error(
                             self.logger,
                             f"Command returned exit code {result.returncode}: {description}"
                         )
+                        log_audit_event(
+                            self.logger,
+                            phase="macos",
+                            action="special-command-run",
+                            status="failed",
+                            target=str(description),
+                            summary="Special command returned a non-zero exit code",
+                            command=command if command else shell_command,
+                            details=[f"exit_code: {result.returncode}", f"requires_sudo: {requires_sudo}"],
+                        )
                         fail_count += 1
             
             except Exception as e:
                 log_error(self.logger, f"Failed to run '{description}': {e}")
+                log_audit_event(self.logger, phase="macos", action="special-command-run", status="failed", target=str(description), summary="Special command execution failed", command=command if command else shell_command, details=str(e))
                 fail_count += 1
         
         if fail_count == 0:
@@ -289,12 +422,14 @@ class MacOSSettingsManager:
                 self.logger,
                 f"Successfully ran all {success_count} special commands"
             )
+            log_audit_event(self.logger, phase="macos", action="special-commands-completed", status="ok", summary="All special commands completed successfully", details=[f"successful: {success_count}", f"failed: {fail_count}"])
             return True
         else:
             log_warning(
                 self.logger,
                 f"Ran {success_count} commands, {fail_count} failed"
             )
+            log_audit_event(self.logger, phase="macos", action="special-commands-completed", status="failed", summary="Special commands completed with failures", details=[f"successful: {success_count}", f"failed: {fail_count}"])
             return False
     
     def restart_applications(self, applications: List[str]) -> None:
@@ -308,9 +443,27 @@ class MacOSSettingsManager:
             return
         
         log_info(self.logger, "Restarting applications to apply settings...")
+        log_audit_event(
+            self.logger,
+            phase="macos",
+            action="application-restart-batch-started",
+            status="started",
+            summary="Restarting applications to apply settings",
+            details=[f"application_count: {len(applications)}"],
+        )
         
         for app in applications:
             if self.dry_run:
                 log_info(self.logger, f"[dry-run] Would restart application: {app}")
+                log_audit_event(self.logger, phase="macos", action="application-restart", status="dry-run", target=app, summary="Application would be restarted in dry-run mode")
             else:
-                restart_application(app, self.logger)
+                restarted = restart_application(app, self.logger)
+                log_audit_event(self.logger, phase="macos", action="application-restart", status="ok" if restarted else "failed", target=app, summary="Application restart attempted")
+
+        log_audit_event(
+            self.logger,
+            phase="macos",
+            action="application-restart-batch-completed",
+            status="ok",
+            summary="Application restart processing completed",
+        )

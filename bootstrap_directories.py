@@ -11,7 +11,17 @@ import yaml
 
 from modules.config_loader import get_config_list, load_config
 from modules.directories import create_directories
-from modules.utils import check_macos, log_error, log_info, log_success, log_warning, setup_logging
+from modules.utils import (
+    check_macos,
+    get_audit_log_path,
+    initialize_audit_logger,
+    log_audit_event,
+    log_error,
+    log_info,
+    log_success,
+    log_warning,
+    setup_logging,
+)
 
 
 def print_banner() -> None:
@@ -61,30 +71,69 @@ def run_phase(*, config: dict, script_dir: Path, dry_run: bool, logger) -> bool:
 def main() -> int:
     args = parse_arguments()
     logger = setup_logging(args.log_file, verbose=args.verbose)
+    script_dir = Path(__file__).resolve().parent
+    initialize_audit_logger(
+        logger,
+        script_dir=script_dir,
+        command_name="bootstrap-directories",
+        dry_run=args.dry_run,
+    )
 
     print_banner()
+    log_audit_event(
+        logger,
+        phase="directories",
+        action="run-started",
+        status="ok",
+        summary="Directories bootstrap run started",
+    )
 
     if not check_macos():
         log_error(logger, "This script is designed for macOS only!")
+        log_audit_event(
+            logger,
+            phase="directories",
+            action="platform-check",
+            status="failed",
+            summary="Directories bootstrap aborted because platform is not macOS",
+        )
         return 1
 
-    script_dir = Path(__file__).resolve().parent
     config_path = Path(args.config)
     if not config_path.is_absolute():
         config_path = script_dir / config_path
 
     try:
         log_info(logger, f"Loading configuration from {config_path}")
+        log_audit_event(
+            logger,
+            phase="directories",
+            action="config-load",
+            status="started",
+            target=str(config_path),
+            summary="Loading directory configuration",
+        )
         config = load_config(config_path)
         log_success(logger, "Configuration loaded successfully")
+        log_audit_event(
+            logger,
+            phase="directories",
+            action="config-load",
+            status="ok",
+            target=str(config_path),
+            summary="Directory configuration loaded successfully",
+        )
     except FileNotFoundError as exc:
         log_error(logger, str(exc))
+        log_audit_event(logger, phase="directories", action="config-load", status="failed", target=str(config_path), summary="Directory configuration not found", details=str(exc))
         return 1
     except yaml.YAMLError as exc:
         log_error(logger, f"Invalid YAML configuration: {exc}")
+        log_audit_event(logger, phase="directories", action="config-load", status="failed", target=str(config_path), summary="Directory configuration YAML is invalid", details=str(exc))
         return 1
     except Exception as exc:
         log_error(logger, f"Failed to load configuration: {exc}")
+        log_audit_event(logger, phase="directories", action="config-load", status="failed", target=str(config_path), summary="Directory configuration loading failed", details=str(exc))
         return 1
 
     if args.dry_run:
@@ -96,10 +145,18 @@ def main() -> int:
     print()
     if success:
         log_success(logger, "Directories phase complete! 🎉")
+        audit_log = get_audit_log_path(logger)
+        if audit_log is not None:
+            log_info(logger, f"Audit log: {audit_log}")
+        log_audit_event(logger, phase="directories", action="run-completed", status="ok", summary="Directories bootstrap run completed successfully")
         print()
         return 0
 
     log_warning(logger, "Directories phase completed with some errors")
+    audit_log = get_audit_log_path(logger)
+    if audit_log is not None:
+        log_info(logger, f"Audit log: {audit_log}")
+    log_audit_event(logger, phase="directories", action="run-completed", status="failed", summary="Directories bootstrap run completed with errors")
     print()
     return 1
 

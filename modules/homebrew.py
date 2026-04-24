@@ -13,7 +13,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import TextIO
 
-from modules.utils import log_error, log_info, log_success, log_warning
+from modules.utils import log_audit_event, log_error, log_info, log_success, log_warning
 
 
 BREWFILE_NAMES = (
@@ -74,9 +74,18 @@ class BrewfileInstaller:
     def run(self) -> int:
         """Execute the Brewfile installation phase."""
         log_info(self.logger, "Processing Brewfile entries (continuing past individual failures)...")
+        log_audit_event(
+            self.logger,
+            phase="brew",
+            action="brewfile-batch-started",
+            status="started",
+            summary="Processing split Brewfiles",
+            details=[f"brewfile_count: {len(self.brewfile_paths)}", f"reinstall_existing: {self.reinstall_existing}"],
+        )
 
         if not self.brewfile_dir.is_dir():
             log_warning(self.logger, f"Brewfile directory not found at {self.brewfile_dir}; skipping")
+            log_audit_event(self.logger, phase="brew", action="brewfile-directory-check", status="skipped", target=str(self.brewfile_dir), summary="Brewfile directory not found; brew phase skipped")
             return 0
 
         self.summary = BrewInstallSummary()
@@ -87,6 +96,7 @@ class BrewfileInstaller:
                 message = f"Brewfile not found at {brewfile_path}; skipping"
                 log_warning(self.logger, message)
                 self._append_log_status("WARN", f"Missing Brewfile: {brewfile_path}")
+                log_audit_event(self.logger, phase="brew", action="brewfile-check", status="skipped", target=str(brewfile_path), summary="Configured Brewfile was not found")
                 continue
 
             self.summary.processed_files += 1
@@ -95,6 +105,7 @@ class BrewfileInstaller:
         if self.summary.processed_files == 0:
             log_warning(self.logger, "No Brewfiles were found to process; skipping")
             self._append_log_status("WARN", "No Brewfiles were found to process")
+            log_audit_event(self.logger, phase="brew", action="brewfile-batch-completed", status="skipped", summary="No Brewfiles were available to process")
             return 0
 
         self._write_summary_to_log()
@@ -105,14 +116,39 @@ class BrewfileInstaller:
                 self.logger,
                 "Brewfile processing completed with some issues. Review the summary above and the detailed log.",
             )
+            log_audit_event(
+                self.logger,
+                phase="brew",
+                action="brewfile-batch-completed",
+                status="failed",
+                summary="Brewfile processing completed with some issues",
+                details=[
+                    f"processed_files: {self.summary.processed_files}",
+                    f"processed_entries: {self.summary.total_entries}",
+                    f"failed: {len(self.summary.failed)}",
+                    f"unparsed: {len(self.summary.unparsed)}",
+                ],
+            )
             return 1
 
         log_success(self.logger, "All Brewfile entries were processed successfully")
+        log_audit_event(
+            self.logger,
+            phase="brew",
+            action="brewfile-batch-completed",
+            status="ok",
+            summary="All Brewfile entries were processed successfully",
+            details=[
+                f"processed_files: {self.summary.processed_files}",
+                f"processed_entries: {self.summary.total_entries}",
+            ],
+        )
         return 0
 
     def _process_brewfile(self, brewfile_path: Path) -> None:
         log_info(self.logger, f"Processing {brewfile_path.name}")
         self._append_log_status("INFO", f"Processing Brewfile: {brewfile_path}")
+        log_audit_event(self.logger, phase="brew", action="brewfile-started", status="started", target=str(brewfile_path), summary="Processing Brewfile")
 
         for line_number, line in enumerate(brewfile_path.read_text(encoding="utf-8").splitlines(), start=1):
             if not line.strip() or line.lstrip().startswith("#"):
@@ -133,6 +169,8 @@ class BrewfileInstaller:
                 self._install_tap(entry.name)
             elif entry.kind == "mas" and entry.app_id is not None:
                 self._install_mas(entry.name, entry.app_id)
+
+        log_audit_event(self.logger, phase="brew", action="brewfile-completed", status="ok", target=str(brewfile_path), summary="Finished processing Brewfile")
 
     def _parse_line(self, line: str) -> BrewfileEntry | None:
         for pattern, kind in (
@@ -172,6 +210,15 @@ class BrewfileInstaller:
             handle.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] [{status:<4}] {message}\n")
 
     def _record_outcome(self, status: str, message: str, bucket: str) -> None:
+        self._record_outcome_with_command(status, message, bucket, None)
+
+    def _record_outcome_with_command(
+        self,
+        status: str,
+        message: str,
+        bucket: str,
+        command: list[str] | None,
+    ) -> None:
         color_log = {
             "OK": log_success,
             "SKIP": log_info,
@@ -181,6 +228,21 @@ class BrewfileInstaller:
         color_log(self.logger, f"[{status:<4}] {message}")
         self._append_log_status(status, message)
         getattr(self.summary, bucket).append(message)
+        mapped_status = {
+            "OK": "ok",
+            "SKIP": "skipped",
+            "FAIL": "failed",
+            "WARN": "warning",
+        }.get(status, status.lower())
+        log_audit_event(
+            self.logger,
+            phase="brew",
+            action="brew-entry",
+            status=mapped_status,
+            target=message,
+            summary="Processed Brewfile entry",
+            command=command,
+        )
 
     def _write_command_log_header(self, description: str, command: list[str], handle: TextIO) -> None:
         handle.write("\n")
@@ -210,6 +272,16 @@ class BrewfileInstaller:
                 handle.write("--- end command output ---\n")
             handle.write(f"Exit code: {result.returncode}\n")
             handle.write("=== end ===\n")
+        log_audit_event(
+            self.logger,
+            phase="brew",
+            action="brew-command",
+            status="ok" if result.returncode == 0 else "failed",
+            target=description,
+            summary="Brew command executed",
+            command=command,
+            details=[f"exit_code: {result.returncode}"],
+        )
         return result.returncode == 0
 
     def _check_command(self, command: list[str]) -> bool:
@@ -256,21 +328,25 @@ class BrewfileInstaller:
         item_label = f"brew {formula_name}"
         if self._is_formula_installed(formula_name):
             if self.reinstall_existing:
-                success = self._run_logged_command(f"reinstall {item_label}", ["brew", "reinstall", formula_name])
-                self._record_outcome(
+                command = ["brew", "reinstall", formula_name]
+                success = self._run_logged_command(f"reinstall {item_label}", command)
+                self._record_outcome_with_command(
                     "OK" if success else "FAIL",
                     f"{item_label} ({'reinstalled' if success else 'reinstall failed'})",
                     "reinstalled" if success else "failed",
+                    command,
                 )
             else:
                 self._record_outcome("SKIP", f"{item_label} (already installed)", "skipped")
             return
 
-        success = self._run_logged_command(f"install {item_label}", ["brew", "install", formula_name])
-        self._record_outcome(
+        command = ["brew", "install", formula_name]
+        success = self._run_logged_command(f"install {item_label}", command)
+        self._record_outcome_with_command(
             "OK" if success else "FAIL",
             f"{item_label} ({'installed' if success else 'install failed'})",
             "installed" if success else "failed",
+            command,
         )
 
     def _install_cask(self, cask_name: str) -> None:
@@ -279,27 +355,31 @@ class BrewfileInstaller:
 
         if self._is_cask_installed(cask_name):
             if self.reinstall_existing:
+                command = ["brew", "reinstall", "--cask", "--appdir", str(self.app_dir), cask_name]
                 success = self._run_logged_command(
                     f"reinstall {item_label}",
-                    ["brew", "reinstall", "--cask", "--appdir", str(self.app_dir), cask_name],
+                    command,
                 )
-                self._record_outcome(
+                self._record_outcome_with_command(
                     "OK" if success else "FAIL",
                     f"{item_label} ({'reinstalled' if success else 'reinstall failed'})",
                     "reinstalled" if success else "failed",
+                    command,
                 )
             else:
                 self._record_outcome("SKIP", f"{item_label} (already installed)", "skipped")
             return
 
+        command = ["brew", "install", "--cask", "--appdir", str(self.app_dir), cask_name]
         success = self._run_logged_command(
             f"install {item_label}",
-            ["brew", "install", "--cask", "--appdir", str(self.app_dir), cask_name],
+            command,
         )
-        self._record_outcome(
+        self._record_outcome_with_command(
             "OK" if success else "FAIL",
             f"{item_label} ({'installed' if success else 'install failed'})",
             "installed" if success else "failed",
+            command,
         )
 
     def _install_tap(self, tap_name: str) -> None:
@@ -308,8 +388,9 @@ class BrewfileInstaller:
             self._record_outcome("SKIP", f"{item_label} (already tapped)", "skipped")
             return
 
-        success = self._run_logged_command(item_label, ["brew", "tap", tap_name])
-        self._record_outcome("OK" if success else "FAIL", item_label, "installed" if success else "failed")
+        command = ["brew", "tap", tap_name]
+        success = self._run_logged_command(item_label, command)
+        self._record_outcome_with_command("OK" if success else "FAIL", item_label, "installed" if success else "failed", command)
 
     def _install_mas(self, app_name: str, app_id: str) -> None:
         item_label = f"mas {app_name} ({app_id})"
@@ -321,8 +402,9 @@ class BrewfileInstaller:
             self._record_outcome("SKIP", f"{item_label} (already installed)", "skipped")
             return
 
-        success = self._run_logged_command(item_label, ["mas", "install", app_id])
-        self._record_outcome("OK" if success else "FAIL", item_label, "installed" if success else "failed")
+        command = ["mas", "install", app_id]
+        success = self._run_logged_command(item_label, command)
+        self._record_outcome_with_command("OK" if success else "FAIL", item_label, "installed" if success else "failed", command)
 
     def _write_summary_to_log(self) -> None:
         if self.log_file is None:

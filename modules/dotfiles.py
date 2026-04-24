@@ -6,7 +6,15 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from .utils import expand_path, backup_file, log_info, log_success, log_warning, log_error
+from .utils import (
+    backup_file,
+    expand_path,
+    log_audit_event,
+    log_error,
+    log_info,
+    log_success,
+    log_warning,
+)
 
 
 class DotfilesManager:
@@ -56,6 +64,15 @@ class DotfilesManager:
             # Check if source exists
             if not source_path.exists():
                 log_error(self.logger, f"Source file not found: {source_path}")
+                log_audit_event(
+                    self.logger,
+                    phase="dotfiles",
+                    action="dotfile-install",
+                    status="failed",
+                    target=str(dest_path),
+                    summary="Dotfile source file not found",
+                    details=[f"source: {source_path}", f"description: {description}"],
+                )
                 return False
             
             # Backup existing file if it exists
@@ -66,6 +83,15 @@ class DotfilesManager:
                         self.logger,
                         f"[dry-run] Would back up existing {dest_path} to {self._get_backup_dir()}"
                     )
+                    log_audit_event(
+                        self.logger,
+                        phase="dotfiles",
+                        action="dotfile-backup",
+                        status="dry-run",
+                        target=str(dest_path),
+                        summary="Existing dotfile would be backed up",
+                        details=[f"backup_dir: {self._get_backup_dir()}"],
+                    )
                 else:
                     backup_path = backup_file(dest_path, self._get_backup_dir())
 
@@ -73,6 +99,15 @@ class DotfilesManager:
                     log_warning(
                         self.logger,
                         f"Backed up existing {dest_path.name} to {backup_path}"
+                    )
+                    log_audit_event(
+                        self.logger,
+                        phase="dotfiles",
+                        action="dotfile-backup",
+                        status="ok",
+                        target=str(dest_path),
+                        summary="Existing dotfile backed up",
+                        details=[f"backup_path: {backup_path}"],
                     )
             
             # Create parent directory if needed
@@ -84,14 +119,41 @@ class DotfilesManager:
             # Copy file
             if self.dry_run:
                 log_info(self.logger, f"[dry-run] Would install {description}: {source_path} -> {dest_path}")
+                log_audit_event(
+                    self.logger,
+                    phase="dotfiles",
+                    action="dotfile-install",
+                    status="dry-run",
+                    target=str(dest_path),
+                    summary="Dotfile would be installed in dry-run mode",
+                    details=[f"source: {source_path}", f"description: {description}"],
+                )
             else:
                 shutil.copy2(source_path, dest_path)
                 log_success(self.logger, f"Installed {description}: {dest_path}")
+                log_audit_event(
+                    self.logger,
+                    phase="dotfiles",
+                    action="dotfile-install",
+                    status="ok",
+                    target=str(dest_path),
+                    summary="Dotfile installed",
+                    details=[f"source: {source_path}", f"description: {description}"],
+                )
             
             return True
         
         except Exception as e:
             log_error(self.logger, f"Failed to install {description}: {e}")
+            log_audit_event(
+                self.logger,
+                phase="dotfiles",
+                action="dotfile-install",
+                status="failed",
+                target=destination,
+                summary="Dotfile installation failed",
+                details=[f"source: {source}", f"description: {description}", f"error: {e}"],
+            )
             return False
     
     def install_dotfiles(self, dotfiles_config: List[Dict]) -> bool:
@@ -105,6 +167,13 @@ class DotfilesManager:
             True if all installations successful, False otherwise
         """
         log_info(self.logger, "Installing dotfiles...")
+        log_audit_event(
+            self.logger,
+            phase="dotfiles",
+            action="dotfile-batch-started",
+            status="started",
+            summary=f"Preparing to process {len(dotfiles_config)} configured dotfiles",
+        )
         
         success_count = 0
         fail_count = 0
@@ -116,6 +185,14 @@ class DotfilesManager:
             
             if not source or not destination:
                 log_error(self.logger, f"Invalid dotfile configuration: {dotfile}")
+                log_audit_event(
+                    self.logger,
+                    phase="dotfiles",
+                    action="dotfile-validate",
+                    status="failed",
+                    summary="Dotfile configuration entry is invalid",
+                    details=str(dotfile),
+                )
                 fail_count += 1
                 continue
             
@@ -130,10 +207,24 @@ class DotfilesManager:
                 self.logger,
                 f"Successfully installed all {success_count} dotfiles"
             )
+            log_audit_event(
+                self.logger,
+                phase="dotfiles",
+                action="dotfile-batch-completed",
+                status="ok",
+                summary=f"Processed {success_count} dotfiles successfully",
+            )
             return True
         else:
             log_warning(
                 self.logger,
                 f"Installed {success_count} dotfiles, {fail_count} failed"
+            )
+            log_audit_event(
+                self.logger,
+                phase="dotfiles",
+                action="dotfile-batch-completed",
+                status="failed",
+                summary=f"Processed {success_count} dotfiles successfully and {fail_count} failed",
             )
             return False
